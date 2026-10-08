@@ -1,14 +1,16 @@
 package model.PlantTypes;
 
-import model.PlantType;
+import model.Plant;
 
-public class Monstera implements PlantType {
-    private final int leafSize;
+public class Monstera extends Plant {
+    private int leafSize;
 
-    public Monstera(int leafSize) {
-        if(leafSize < 0) throw new IllegalArgumentException("leafSize cannot be negative");
+    public Monstera(String name, String color, double cost, int leafSize) {
+        super(name, color, cost);
         this.leafSize = leafSize;
     }
+
+    public void setLeafSize(int leafSize) { this.leafSize = leafSize; }
 
     public int getLeafSize() {
         return leafSize;
@@ -35,7 +37,7 @@ public class Monstera implements PlantType {
 
     @Override
     public String getInfo() {
-        return "Monstera plant, leaf size: "+leafSize;
+        return super.getInfo()+"Monstera plant, leaf size: "+leafSize;
     }
 
 }

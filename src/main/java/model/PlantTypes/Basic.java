@@ -1,9 +1,10 @@
 package model.PlantTypes;
 
-import model.PlantType;
+import model.Plant;
 
-public class Basic implements PlantType {
-    public Basic() {
+public class Basic extends Plant {
+    public Basic(String name, String color, double cost) {
+        super(name, color, cost);
     }
 
     @Override
@@ -13,6 +14,6 @@ public class Basic implements PlantType {
 
     @Override
     public String getInfo() {
-        return "Normal plant";
+        return super.getInfo()+"Basic plant";
     }
 }

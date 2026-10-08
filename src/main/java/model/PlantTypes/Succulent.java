@@ -1,13 +1,16 @@
 package model.PlantTypes;
 
-import model.PlantType;
+import model.Plant;
 
-public class Succulent implements PlantType {
-    private final boolean spiky;
+public class Succulent extends Plant {
+    private boolean spiky;
 
-    public Succulent(boolean spiky) {
+    public Succulent(String name, String color, double cost, boolean spiky) {
+        super(name, color, cost);
         this.spiky = spiky;
     }
+
+    public void setSpiky(boolean spiky) { this.spiky = spiky; }
 
     public boolean isSpiky() {
         return spiky;
@@ -20,6 +23,6 @@ public class Succulent implements PlantType {
 
     @Override
     public String getInfo() {
-        return "Succulent plant, is " + (spiky ? "":"not") + " spiky";
+        return super.getInfo()+"Succulent plant, is " + (spiky ? "":"not") + " spiky";
     }
 }

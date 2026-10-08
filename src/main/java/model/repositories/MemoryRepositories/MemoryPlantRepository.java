@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -17,41 +19,27 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class MemoryPlantRepository implements PlantRepository {
 
-    private Map<Long, Plant> plants = new HashMap<Long, Plant>();
+    private Map<Long, Plant> plants = new ConcurrentHashMap<>();
 
-    private Long curId = 1L;
-
-    private ReadWriteLock lock = new ReentrantReadWriteLock(true);
-    private Lock readLock = lock.readLock();
-    private Lock writeLock = lock.writeLock();
+    private final AtomicLong curId = new AtomicLong(1);
 
     @Override
     public boolean addPlant(Plant plant) {
         if (plant == null) {
             return false;  //TODO: zmiana boolean na void (albo return plant po dodaniu) i tego na wyjątki?, podobnie w innych repozytoriach
         }
-
-        writeLock.lock();
-        try {
-            plant.setId(curId++);
-            plants.put(plant.getId(), plant);
-            return true;
-        } finally {
-            writeLock.unlock();
-        }
+        Long newId = curId.getAndIncrement();
+        plant.setId(newId);
+        plants.put(plant.getId(), plant);
+        return true;
     }
 
     @Override
     public Plant getPlant(Long id) {
-        if  (id < 0 || id >= plants.size()) {
+        if (id == null) {
             return null;
         }
-        readLock.lock();
-        try {
-            return plants.get(id);
-        } finally {
-            readLock.unlock();
-        }
+        return plants.get(id);
     }
 
     @Override
@@ -59,47 +47,25 @@ public class MemoryPlantRepository implements PlantRepository {
         if (id == null) {
             return false;
         }
-        writeLock.lock();
-        try {
-            plants.remove(id);
-            return true;
-        } finally {
-            writeLock.unlock();
-        }
+        plants.remove(id);
+        return true;
     }
 
 
     @Override
-    public List<Plant> getPlants() {
-        readLock.lock();
-        try {
-            return new ArrayList<>(plants.values());
-        } finally {
-            readLock.unlock();
-        }
-    }
+    public List<Plant> getPlants() { return new ArrayList<>(plants.values()); }
 
     @Override
     public List<Plant> findAllAvailable() {
-        readLock.lock();
-        try {
-            return plants.values().stream()
-                    .filter(Plant::isAvailable)
-                    .collect(Collectors.toList());
-        } finally {
-            readLock.unlock();
-        }
+        return plants.values().stream()
+                .filter(Plant::isAvailable)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<Plant> findAllUnavailable() {
-        readLock.lock();
-        try {
-            return plants.values().stream()
-                    .filter(plant -> !plant.isAvailable())
-                    .collect(Collectors.toList());
-        } finally {
-            readLock.unlock();
-        }
+        return plants.values().stream()
+                .filter(plant -> !plant.isAvailable())
+                .collect(Collectors.toList());
     }
 }

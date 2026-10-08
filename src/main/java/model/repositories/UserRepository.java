@@ -12,7 +12,8 @@ public interface UserRepository {
     //boolean saveUsers(List<User> users);
     //boolean updateUser(User user);
 
-    boolean removeUser(Long id);
+    boolean activateUser(Long id);
+    boolean deactivateUser(Long id);
     List<User> getUsers();
     List<User> findAllActive();
     List<User> findAllUnactive();

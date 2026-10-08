@@ -1,11 +1,12 @@
 package model.PlantTypes;
 
-import model.PlantType;
+import model.Plant;
 
-public class Carnivorous implements PlantType {
+public class Carnivorous extends Plant {
     private String favouriteFood;
 
-    public Carnivorous(String favouriteFood) {
+    public Carnivorous(String name, String color, double cost, String favouriteFood) {
+        super(name, color, cost);
         this.favouriteFood = favouriteFood;
     }
 
@@ -29,6 +30,6 @@ public class Carnivorous implements PlantType {
 
     @Override
     public String getInfo() {
-        return "Carnivorous plant, favourite food: "+favouriteFood;
+        return super.getInfo()+"Carnivorous plant, favourite food: "+favouriteFood;
     }
 }
