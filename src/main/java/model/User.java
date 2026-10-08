@@ -1,21 +1,20 @@
 package model;
 
-public class User {
-    private int id;
+public abstract class User {
+    private Long id = null;
     private String login;
     private boolean active;
 
-    public User(int id, String login, boolean active) {
-        this.id = id;
+    public User(Long id, String login, boolean active) {
         this.login = login;
         this.active = active;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

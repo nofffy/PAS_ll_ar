@@ -1,12 +1,10 @@
 package model;
 
-public class Plant {
-    private Long id; //UUID??
+public abstract class Plant {
+    private Long id = null; //UUID??
     private String name;
-    private String color;
-    private double cost;
-    private boolean sold;
     private PlantType plantType;
+    private boolean available = true;
 
 //    public Plant(Long id, String name, String color, double cost, boolean sold, PlantType plantType) {
 //        this.id = id;
@@ -20,9 +18,6 @@ public class Plant {
     public Plant(String name, String color, double cost, boolean sold, PlantType plantType) {
         this.id = null;
         this.name = name;
-        this.color = color;
-        this.cost = cost;
-        this.sold = sold;
         this.plantType = plantType;
     }
 
@@ -42,30 +37,6 @@ public class Plant {
         this.name = name;
     }
 
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public double getCost() {
-        return cost;
-    }
-
-    public void setCost(double cost) {
-        this.cost = cost;
-    }
-
-    public boolean isSold() {
-        return sold;
-    }
-
-    public void setSold(boolean sold) {
-        this.sold = sold;
-    }
-
     public PlantType getPlantType() {
         return plantType;
     }
@@ -77,4 +48,7 @@ public class Plant {
     public String getInfo() {
         return getPlantType().getInfo();
     }
+
+    public boolean isAvailable() { return available; }
+    public void setAvailable(boolean available) { this.available = available; }
 }

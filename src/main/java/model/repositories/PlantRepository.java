@@ -8,9 +8,9 @@ public interface PlantRepository {
     Plant getPlant(Long id); //UUID?
     boolean addPlant(Plant plant);
     boolean removePlant(Long id);
-    boolean updatePlant(Plant plant);
+    //boolean updatePlant(Plant plant);
 
-    boolean savePlants(List<Plant> plants);
+    //boolean savePlants(List<Plant> plants);
     List<Plant> getPlants();
 
     List<Plant> findAllAvailable();

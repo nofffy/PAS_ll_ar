@@ -5,12 +5,14 @@ import model.repositories.PlantRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class MemoryPlantRepository implements PlantRepository {
@@ -26,7 +28,7 @@ public class MemoryPlantRepository implements PlantRepository {
     @Override
     public boolean addPlant(Plant plant) {
         if (plant == null) {
-            return false;  //TODO: zmiana boolean na void (albo return plant po dodaniu) i tego na wyjątki?
+            return false;  //TODO: zmiana boolean na void (albo return plant po dodaniu) i tego na wyjątki?, podobnie w innych repozytoriach
         }
 
         writeLock.lock();
@@ -54,31 +56,50 @@ public class MemoryPlantRepository implements PlantRepository {
 
     @Override
     public boolean removePlant(Long id) {
-        return false;
+        if (id == null) {
+            return false;
+        }
+        writeLock.lock();
+        try {
+            plants.remove(id);
+            return true;
+        } finally {
+            writeLock.unlock();
+        }
     }
 
-    @Override
-    public boolean updatePlant(Plant plant) {
-        return false;
-    }
-
-    @Override
-    public boolean savePlants(List<Plant> plants) {
-        return false;
-    }
 
     @Override
     public List<Plant> getPlants() {
-        return null;
+        readLock.lock();
+        try {
+            return new ArrayList<>(plants.values());
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public List<Plant> findAllAvailable() {
-        return null;
+        readLock.lock();
+        try {
+            return plants.values().stream()
+                    .filter(Plant::isAvailable)
+                    .collect(Collectors.toList());
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public List<Plant> findAllUnavailable() {
-        return null;
+        readLock.lock();
+        try {
+            return plants.values().stream()
+                    .filter(plant -> !plant.isAvailable())
+                    .collect(Collectors.toList());
+        } finally {
+            readLock.unlock();
+        }
     }
 }

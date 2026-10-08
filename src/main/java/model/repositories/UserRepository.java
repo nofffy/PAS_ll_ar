@@ -5,12 +5,16 @@ import model.User;
 import java.util.List;
 
 public interface UserRepository {
-    User getUser(int id);
     boolean addUser(User User);
-    boolean updateUser(User user);
-    boolean removeUser(int id);
+    User getUser(Long id);
+    User getUserByLogin(String login);
+    List<User> getUsersByLoginPattern(String loginPattern);
+    //boolean saveUsers(List<User> users);
+    //boolean updateUser(User user);
 
-    boolean saveUsers(List<User> users);
+    boolean removeUser(Long id);
     List<User> getUsers();
-    int sizeUsers();
+    List<User> findAllActive();
+    List<User> findAllUnactive();
+    //int sizeUsers();
 }

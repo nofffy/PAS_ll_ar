@@ -4,42 +4,42 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class Rent {
-    private int id;
+    private Long id = null;
     private User client;
     private Plant plant;
     private LocalDateTime rentStart;
-    private LocalDateTime rentEnd;
+    private LocalDateTime rentEnd = null;
+    boolean archived = false;
 
 
     //Chyba niepotrzebne, Chyba przy CRUDzie bedzie podawany obiekt zawsze ;p
-//    public Rent(int id, User client, Plant plant) {
+//    public Rent(Long id, User client, Plant plant) {
 //        this.id = id;
 //        this.client = client;
 //        this.plant = this.plant;
 //        this.rentStart = LocalDateTime.now();
 //    }
 
-    public Rent(User client, Plant plant, LocalDateTime rentEnd) {
-        this.id = 0;
+    public Rent(User client, Plant plant) {
+        this.id = null;
         this.client = client;
         this.plant = plant;
         this.rentStart = LocalDateTime.now();
-        this.rentEnd = rentEnd;
+
     }
 
-    public Rent(int id, User client, Plant plant, LocalDateTime rentStart, LocalDateTime rentEnd) {
+    public Rent(Long id, User client, Plant plant, LocalDateTime rentStart) {
         this.id = id;
         this.client = client;
         this.plant = plant;
         this.rentStart = rentStart;
-        this.rentEnd = rentEnd;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -69,5 +69,9 @@ public class Rent {
 
     public LocalDateTime getRentEnd() { return rentEnd; }
 
-    public void setRentEnd(LocalDateTime rentEnd) { this.rentEnd = rentEnd; }
+    public void endRent() { this.rentEnd = LocalDateTime.now(); }
+
+    public boolean isArchived() { return archived; }
+
+    public void setArchived() { this.archived = true; }
 }

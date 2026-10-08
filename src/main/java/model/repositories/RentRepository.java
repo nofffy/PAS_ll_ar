@@ -5,10 +5,10 @@ import model.Rent;
 import java.util.List;
 
 public interface RentRepository {
-    Rent getRent(int id);
+    Rent getRent(Long id);
     boolean addRent(Rent rent);
-    boolean removeRent(int id);
+    boolean removeRent(Long id);
 
     List<Rent> getRents();
-    int getRentsCount();
+//    int getRentsCount();
 }
