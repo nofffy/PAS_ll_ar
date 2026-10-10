@@ -54,7 +54,7 @@ public class MemoryUserRepository implements UserRepository {
     @Override
     public List<User> getUsersByLoginPattern(String loginPattern) { //tu mozna by bylo zrobic regexa, albo jakis wczesniej ustalony pattern ale w wymaganiach nieopisane :3
         if  (loginPattern == null) {
-            return null;
+            return List.of();
         }
         return usersByLogin.values().stream()
                 .filter(user -> user.getLogin().contains(loginPattern))  //imo tak git, zwrocic wszystko co zawiera

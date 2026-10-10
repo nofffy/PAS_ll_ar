@@ -5,7 +5,7 @@ public abstract class User {
     private String login;
     private boolean active;
 
-    public User(Long id, String login, boolean active) {
+    public User(String login, boolean active) {
         this.login = login;
         this.active = active;
     }
