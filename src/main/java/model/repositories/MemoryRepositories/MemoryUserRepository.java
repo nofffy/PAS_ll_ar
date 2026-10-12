@@ -1,5 +1,6 @@
 package model.repositories.MemoryRepositories;
 
+import plantExeptions.UserLoginAlreadyUsedException;
 import model.User;
 import model.repositories.UserRepository;
 
@@ -21,24 +22,23 @@ public class MemoryUserRepository implements UserRepository {
     private final AtomicLong curId = new AtomicLong(1);
 
     @Override
-    public synchronized boolean addUser(User user) {
+    public void addUser(User user) throws UserLoginAlreadyUsedException, NullPointerException {
         if (user == null) {
-            return false;  //TODO: zmiana boolean na void (albo return user po dodaniu) i tego na wyjątki?
+            throw new NullPointerException();
         }
-        if (usersByLogin.containsKey(user.getLogin())) {
-            return false;
-        }
-        Long newId = curId.getAndIncrement();
+        Long newId = curId.getAndIncrement(); //jezeli juz istnieje uzytkownik o takim loginie to spalimy ID
         user.setId(newId);
+        User existingUser = usersByLogin.putIfAbsent(user.getLogin(), user);
+        if (existingUser != null) {
+            throw new UserLoginAlreadyUsedException("User with login " + user.getLogin() + " already exists");
+        }
         users.put(newId, user);
-        usersByLogin.put(user.getLogin(), user);
-        return true;
     }
 
     @Override
-    public User getUser(Long id) {
+    public User getUser(Long id) throws NullPointerException {
         if (id == null) {
-            return null;
+            throw new NullPointerException();
         }
         return users.get(id);
     }
@@ -61,37 +61,37 @@ public class MemoryUserRepository implements UserRepository {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public boolean activateUser(Long id) {
-        if (id == null) {
-            return false;
-        }
-        User user = users.get(id);
-        if (user == null) {
-            return false;
-        }
-        if(!user.isActive()) {
-            user.setActive(true);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean deactivateUser(Long id) {
-        if (id == null) {
-            return false;
-        }
-        User user = users.get(id);
-        if (user == null) {
-            return false;
-        }
-        if(user.isActive()) {
-            user.setActive(false);
-            return true;
-        }
-        return false;
-    }
+//    @Override
+//    public boolean activateUser(Long id) {
+//        if (id == null) {
+//            return false;
+//        }
+//        User user = users.get(id);
+//        if (user == null) {
+//            return false;
+//        }
+//        if(!user.isActive()) {
+//            user.setActive(true);
+//            return true;
+//        }
+//        return false;
+//    }
+//
+//    @Override
+//    public boolean deactivateUser(Long id) {
+//        if (id == null) {
+//            return false;
+//        }
+//        User user = users.get(id);
+//        if (user == null) {
+//            return false;
+//        }
+//        if(user.isActive()) {
+//            user.setActive(false);
+//            return true;
+//        }
+//        return false;
+//    }
 
     @Override
     public List<User> getUsers() {

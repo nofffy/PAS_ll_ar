@@ -1,9 +1,9 @@
-package model.ClientTypes;
+package model.UserTypes;
 
 import model.User;
 
 public class Client extends User {
-    private double moneySpent;
+    private double moneySpent; //TODO: niepotrzebne albo do implementacji w RentRepo
 
     public Client(String login, boolean active) {
         super(login, active);

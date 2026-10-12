@@ -27,24 +27,25 @@ public class MemoryRentRepository implements RentRepository {
     }
 
     @Override
-    public synchronized boolean addRent(Rent rent)
+    public boolean addRent(Rent rent)
     {
         if(rent == null) {
             return false;
         }
         Long plantId = rent.getPlant().getId();
-        if(activeRentsByPlantId.containsKey(plantId)) {
+
+        Rent existingRent = activeRentsByPlantId.putIfAbsent(plantId, rent);
+        if(existingRent != null) {
             return false;
         }
         Long newId = curId.getAndIncrement();
         rent.setId(newId);
         rents.put(newId, rent);
-        activeRentsByPlantId.put(plantId, rent);
         return true;
     }
 
     @Override
-    public synchronized boolean finishRent(Long id) {
+    public boolean finishRent(Long id) {
         if(id == null) {
             return false;
         }
@@ -53,24 +54,29 @@ public class MemoryRentRepository implements RentRepository {
             return false;
         }
         Long plantId = rent.getPlant().getId();
-        activeRentsByPlantId.remove(plantId);
-        rent.endRent();
-        return true;
+
+        boolean wasRemoved = activeRentsByPlantId.remove(plantId, rent);
+        if (wasRemoved) {
+            rent.endRent();
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public synchronized boolean removeRent(Long id) {
+    public boolean removeRent(Long id) {
         if(id == null) {
             return false;
         }
         Rent rent = rents.get(id);
-        if(rent == null) {
+        if(rent == null || rent.getRentEnd() == null) {
             return false;
         }
         Long plantId = rent.getPlant().getId();
-        if(rent.getRentEnd() == null) {
+
+        boolean wasRemoved = activeRentsByPlantId.remove(plantId, rent);
+        if(wasRemoved) {
             rents.remove(id);
-            activeRentsByPlantId.remove(plantId);
             return true;
         }
         return false;

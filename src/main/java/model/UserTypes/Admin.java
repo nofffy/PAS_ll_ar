@@ -1,4 +1,4 @@
-package model.ClientTypes;
+package model.UserTypes;
 
 import model.User;
 
