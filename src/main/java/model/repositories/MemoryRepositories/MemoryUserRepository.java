@@ -22,9 +22,9 @@ public class MemoryUserRepository implements UserRepository {
     private final AtomicLong curId = new AtomicLong(1);
 
     @Override
-    public void addUser(User user) throws UserLoginAlreadyUsedException, NullPointerException {
+    public void addUser(User user) {
         if (user == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException();
         }
         Long newId = curId.getAndIncrement(); //jezeli juz istnieje uzytkownik o takim loginie to spalimy ID
         user.setId(newId);
@@ -36,9 +36,9 @@ public class MemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public User getUser(Long id) throws NullPointerException {
+    public User getUser(Long id) {
         if (id == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException();
         }
         return users.get(id);
     }
@@ -56,42 +56,11 @@ public class MemoryUserRepository implements UserRepository {
         if  (loginPattern == null) {
             return List.of();
         }
+        final String lp = loginPattern.toLowerCase();
         return usersByLogin.values().stream()
-                .filter(user -> user.getLogin().contains(loginPattern))  //imo tak git, zwrocic wszystko co zawiera
+                .filter(user -> user.getLogin().toLowerCase().contains(lp))  //imo tak git, zwrocic wszystko co zawiera
                 .collect(Collectors.toList());
     }
-
-//    @Override
-//    public boolean activateUser(Long id) {
-//        if (id == null) {
-//            return false;
-//        }
-//        User user = users.get(id);
-//        if (user == null) {
-//            return false;
-//        }
-//        if(!user.isActive()) {
-//            user.setActive(true);
-//            return true;
-//        }
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean deactivateUser(Long id) {
-//        if (id == null) {
-//            return false;
-//        }
-//        User user = users.get(id);
-//        if (user == null) {
-//            return false;
-//        }
-//        if(user.isActive()) {
-//            user.setActive(false);
-//            return true;
-//        }
-//        return false;
-//    }
 
     @Override
     public List<User> getUsers() {

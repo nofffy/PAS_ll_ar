@@ -1,6 +1,6 @@
 package controllers;
 
-import logic.managers.UserManager;
+import managers.UserManager;
 import model.User;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -8,6 +8,8 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import plantExeptions.UserLoginAlreadyUsedException;
+
 import java.util.List;
 
 @Path("/users")
@@ -20,24 +22,31 @@ public class UserController {
     private UserManager userManager;
 
     @GET
-    public Response getUsers(@QueryParam("loginPattern") String loginPattern) {
+    public Response getUsers(@QueryParam("loginPattern") String loginPattern, @QueryParam("active") Boolean isActive) {
         List<User> users;
         if (loginPattern != null && !loginPattern.isBlank()) {
             users = userManager.getUsersByLogin(loginPattern);
+        } else if (isActive != null) {
+            if (isActive) {
+                users = userManager.findAllActiveUsers();
+            } else {
+                users = userManager.findAllUnactiveUsers();
+            }
         } else {
             users = userManager.getAllUsers();
         }
-        return Response.ok(users).build(); // Zwraca 200 OK
+        return Response.ok(users).build();
     }
 
     @GET
     @Path("/{id}")
     public Response getUserById(@PathParam("id") Long id) {
-        User user = userManager.getUser(id);
-        if (user == null) {
-            return Response.status(Response.Status.NOT_FOUND).build(); // 404 Not Found
+        try {
+            User user = userManager.getUser(id);
+            return Response.ok(user).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         }
-        return Response.ok(user).build(); // 200 OK
     }
 
     @GET
@@ -52,29 +61,35 @@ public class UserController {
 
     @POST
     public Response createUser(User user) {
-        userManager.createUser(user);
-        return Response.status(Response.Status.CREATED).build(); // 201 Created
+        try {
+            userManager.createUser(user);
+            return Response.status(Response.Status.CREATED).build(); // 201 Created
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (UserLoginAlreadyUsedException e) {
+            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
+        }
     }
 
     @POST
     @Path("/{id}/activate")
     public Response activateUser(@PathParam("id") Long id) {
-        User user = userManager.getUser(id);
-        if (user == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+        try {
+            userManager.activateUser(id);
+            return Response.ok().build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         }
-        userManager.activateUser(id);
-        return Response.ok().build();
     }
 
     @POST
     @Path("/{id}/deactivate")
     public Response deactivateUser(@PathParam("id") Long id) {
-        User user = userManager.getUser(id);
-        if (user == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+        try {
+            userManager.deactivateUser(id);
+            return Response.ok().build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         }
-        userManager.deactivateUser(id);
-        return Response.ok().build();
     }
 }

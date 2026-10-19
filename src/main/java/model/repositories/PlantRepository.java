@@ -6,13 +6,10 @@ import java.util.List;
 
 public interface PlantRepository {
     Plant getPlant(Long id); //UUID?
-    boolean addPlant(Plant plant);
-    boolean removePlant(Long id);
-    //boolean updatePlant(Plant plant);
+    void addPlant(Plant plant);
+    void removePlant(Long id);
 
-    //boolean savePlants(List<Plant> plants);
     List<Plant> getPlants();
-
     List<Plant> findAllAvailable();
     List<Plant> findAllUnavailable();
 }

@@ -24,33 +24,30 @@ public class MemoryPlantRepository implements PlantRepository {
     private final AtomicLong curId = new AtomicLong(1);
 
     @Override
-    public boolean addPlant(Plant plant) {
+    public void addPlant(Plant plant) {
         if (plant == null) {
-            return false;  //TODO: zmiana boolean na void (albo return plant po dodaniu) i tego na wyjątki?, podobnie w innych repozytoriach
+            throw new IllegalArgumentException();
         }
         Long newId = curId.getAndIncrement();
         plant.setId(newId);
         plants.put(plant.getId(), plant);
-        return true;
     }
 
     @Override
     public Plant getPlant(Long id) {
         if (id == null) {
-            return null;
+            throw new IllegalArgumentException();
         }
         return plants.get(id);
     }
 
     @Override
-    public boolean removePlant(Long id) {
+    public void removePlant(Long id) {
         if (id == null) {
-            return false;
+            throw new IllegalArgumentException();
         }
         plants.remove(id);
-        return true;
     }
-
 
     @Override
     public List<Plant> getPlants() { return new ArrayList<>(plants.values()); }

@@ -1,4 +1,4 @@
-package logic.managers;
+package managers;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -11,11 +11,9 @@ import java.util.List;
 public class UserManager {
 
     @Inject
-    private MemoryUserRepository mur; //murr :3
+    private MemoryUserRepository mur;
 
-    public void createUser(User userDTO){
-        mur.addUser(userDTO);
-    }
+    public void createUser(User user) { mur.addUser(user); }
 
     public User getUser(Long id){
         return mur.getUser(id);
@@ -34,9 +32,22 @@ public class UserManager {
     }
 
     public void activateUser(Long id){
-        mur.getUser(id).setActive(true);
+        User user = mur.getUser(id);
+        if (user == null) {
+            throw new IllegalArgumentException();
+        }
+        user.setActive(true);
     }
+
     public void deactivateUser(Long id){
-        mur.getUser(id).setActive(false);
+        User user = mur.getUser(id);
+        if (user == null) {
+            throw new IllegalArgumentException();
+        }
+        user.setActive(false);
     }
+
+    public List<User> findAllActiveUsers(){ return mur.findAllActive(); }
+
+    public List<User> findAllUnactiveUsers(){ return mur.findAllUnactive(); }
 }

@@ -62,9 +62,7 @@ public abstract class Plant {
         this.available = available;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
     public void setId(Long id) {
         this.id = id;

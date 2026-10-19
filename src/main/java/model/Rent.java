@@ -50,9 +50,7 @@ public class Rent {
         this.client = client;
     }
 
-    public Plant getPlant() {
-        return plant;
-    }
+    public Plant getPlant() { return plant; }
 
     public void setPlants(Plant plant) {
         this.plant = plant;

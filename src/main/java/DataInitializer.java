@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 
 
 @ApplicationScoped
-//@Startup i @PostConstruct bez parametru w init dla quarkusa
 public class DataInitializer {
     @Inject
     private RentRepository rentRepository;
