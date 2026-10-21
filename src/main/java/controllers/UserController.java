@@ -1,5 +1,7 @@
 package controllers;
 
+import dtos.UserDTO;
+import jakarta.validation.Valid;
 import managers.UserManager;
 import model.User;
 
@@ -60,12 +62,12 @@ public class UserController {
     }
 
     @POST
-    public Response createUser(User user) {
+    public Response createUser(@Valid UserDTO user) {
         try {
             userManager.createUser(user);
             return Response.status(Response.Status.CREATED).build(); // 201 Created
         } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         } catch (UserLoginAlreadyUsedException e) {
             return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
         }

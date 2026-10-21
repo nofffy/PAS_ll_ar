@@ -1,34 +1,20 @@
 package model;
 
 public abstract class Plant {
-    private Long id; //UUID??
+    private Long id = null; //UUID??
     private String name;
     private String color;
     private double cost;
     private boolean available;
 
-//    public Plant(Long id, String name, String color, double cost, boolean sold, PlantType plantType) {
-//        this.id = id;
-//        this.name = name;
-//        this.color = color;
-//        this.cost = cost;
-//        this.sold = sold;
-//        this.plantType = plantType;
-//    }
-
-    public Plant(String name, String color, double cost) {
-        this.id = null;
+    public Plant(String name, String color, double cost, boolean available) {
         this.name = name;
         this.color = color;
         this.cost = cost;
-        this.available = true;
+        this.available = available;
     }
 
     public abstract double getUniqueValue();
-
-    public String getInfo() {
-        return "Name: " + name + ", Color: " + color + ", Cost: " + cost +  ", Available: " + available + "; ";
-    }
 
     public String getName() {
         return name;
@@ -54,9 +40,7 @@ public abstract class Plant {
         this.cost = cost;
     }
 
-    public boolean isAvailable() {
-        return available;
-    }
+    public boolean isAvailable() { return available; }
 
     public void setAvailable(boolean available) {
         this.available = available;

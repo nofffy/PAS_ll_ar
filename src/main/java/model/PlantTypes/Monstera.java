@@ -5,8 +5,8 @@ import model.Plant;
 public class Monstera extends Plant {
     private int leafSize;
 
-    public Monstera(String name, String color, double cost, int leafSize) {
-        super(name, color, cost);
+    public Monstera(String name, String color, double cost, boolean available, int leafSize) {
+        super(name, color, cost, available);
         this.leafSize = leafSize;
     }
 
@@ -34,10 +34,4 @@ public class Monstera extends Plant {
             return leafSize*0.8;
         }
     }
-
-    @Override
-    public String getInfo() {
-        return super.getInfo()+"Monstera plant, leaf size: "+leafSize;
-    }
-
 }

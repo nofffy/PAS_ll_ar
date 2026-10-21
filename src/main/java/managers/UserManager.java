@@ -1,19 +1,43 @@
 package managers;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import dtos.UserDTO;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import model.User;
+import model.UserTypes.Admin;
+import model.UserTypes.Client;
+import model.UserTypes.Gardener;
 import model.repositories.MemoryRepositories.MemoryUserRepository;
 
 import java.util.List;
 
-@ApplicationScoped
+@RequestScoped
 public class UserManager {
 
     @Inject
     private MemoryUserRepository mur;
 
-    public void createUser(User user) { mur.addUser(user); }
+    public void createUser(UserDTO user) {
+        User newUser;
+
+        boolean isActive = true;
+        if (user.getActive() != null) {
+            isActive = user.getActive();
+        }
+
+        String type = user.getType();
+        if (type.equals("ADMIN")) {
+            newUser = new Admin(user.getLogin(), isActive);
+        } else if (type.equals("GARDENER")) {
+            newUser = new Gardener(user.getLogin(), isActive);
+        } else if (type.equals("CLIENT")) {
+            newUser = new Client(user.getLogin(), isActive);
+        } else {
+            throw new IllegalArgumentException("Unknown user type");
+        }
+
+        mur.addUser(newUser);
+    }
 
     public User getUser(Long id){
         return mur.getUser(id);

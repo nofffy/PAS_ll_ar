@@ -5,8 +5,8 @@ import model.Plant;
 public class Succulent extends Plant {
     private boolean spiky;
 
-    public Succulent(String name, String color, double cost, boolean spiky) {
-        super(name, color, cost);
+    public Succulent(String name, String color, double cost, boolean available, boolean spiky) {
+        super(name, color, cost, available);
         this.spiky = spiky;
     }
 
@@ -19,10 +19,5 @@ public class Succulent extends Plant {
     @Override
     public double getUniqueValue() {
         return spiky ? 10.0 : 4.0;
-    }
-
-    @Override
-    public String getInfo() {
-        return super.getInfo()+"Succulent plant, is " + (spiky ? "":"not") + " spiky";
     }
 }

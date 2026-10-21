@@ -1,7 +1,9 @@
 package controllers;
 
+import dtos.PlantDTO;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -46,7 +48,7 @@ public class PlantController {
     }
 
     @POST
-    public Response createPlant(Plant plant) {
+    public Response createPlant(@Valid PlantDTO plant) {
         try {
             plantManager.createPlant(plant);
             return Response.status(Response.Status.CREATED).build(); // 201 Created

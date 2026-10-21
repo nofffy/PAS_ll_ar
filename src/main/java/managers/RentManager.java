@@ -1,12 +1,12 @@
 package managers;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import model.Rent;
 import model.repositories.MemoryRepositories.MemoryRentRepository;
 import java.util.List;
 
-@ApplicationScoped
+@RequestScoped
 public class RentManager {
 
     @Inject
