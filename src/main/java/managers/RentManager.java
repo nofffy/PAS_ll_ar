@@ -1,5 +1,6 @@
 package managers;
 
+import dtos.RentDTO;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import model.Rent;
@@ -14,7 +15,10 @@ public class RentManager {
 
     public Rent getRent(Long id) { return mrr.getRent(id); }
 
-    public void createRent(Rent rent) { mrr.addRent(rent); }
+    public void createRent(RentDTO rent) {
+        Rent newRent = new Rent(rent.getClient(), rent.getPlant(), rent.getRentStart());
+        mrr.addRent(newRent);
+    }
 
     public void finishRent(Long id) { mrr.finishRent(id); }
 

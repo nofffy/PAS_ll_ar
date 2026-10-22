@@ -1,7 +1,9 @@
 package controllers;
 
+import dtos.RentDTO;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -36,7 +38,7 @@ public class RentController {
     }
 
     @POST
-    public Response createRent(Rent rent) {
+    public Response createRent(@Valid RentDTO rent) {
         try {
             rentManager.createRent(rent);
             return Response.status(Response.Status.CREATED).build();

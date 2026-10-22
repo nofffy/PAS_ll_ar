@@ -10,23 +10,6 @@ public class Rent {
     private LocalDateTime rentStart;
     private LocalDateTime rentEnd = null;
 
-
-    //Chyba niepotrzebne, Chyba przy CRUDzie bedzie podawany obiekt zawsze ;p
-//    public Rent(Long id, User client, Plant plant) {
-//        this.id = id;
-//        this.client = client;
-//        this.plant = this.plant;
-//        this.rentStart = LocalDateTime.now();
-//    }
-
-    public Rent(User client, Plant plant) {
-        this.id = null;
-        this.client = client;
-        this.plant = plant;
-        this.rentStart = LocalDateTime.now();
-
-    }
-
     public Rent(User client, Plant plant, LocalDateTime rentStart) {
         this.id = null;
         this.client = client;
