@@ -1,6 +1,7 @@
 package model.repositories.MemoryRepositories;
 
-import plantExeptions.UserLoginAlreadyUsedException;
+import Exeptions.ResourceNotFoundException;
+import Exeptions.UserLoginAlreadyUsedException;
 import model.User;
 import model.repositories.UserRepository;
 
@@ -24,7 +25,7 @@ public class MemoryUserRepository implements UserRepository {
     @Override
     public void addUser(User user) {
         if (user == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Can't be null");
         }
         Long newId = curId.getAndIncrement(); //jezeli juz istnieje uzytkownik o takim loginie to spalimy ID
         user.setId(newId);
@@ -38,15 +39,15 @@ public class MemoryUserRepository implements UserRepository {
     @Override
     public User getUser(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Can't be null");
         }
         return users.get(id);
     }
 
     @Override
     public User getUserByLogin(String login) {
-        if  (login == null) {
-            return null;
+        if (login == null) {
+            throw new IllegalArgumentException("Can't be null");
         }
         return usersByLogin.get(login);  //TODO: nw czy to legalne, posiadanie dwoch tablic (jedna z ID druga z loginami)
     }                                    //jest git, tradeoff czasu za pamiec

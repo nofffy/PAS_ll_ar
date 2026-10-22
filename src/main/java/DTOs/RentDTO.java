@@ -1,35 +1,33 @@
-package dtos;
+package DTOs;
 
 import jakarta.validation.constraints.NotNull;
-import model.Plant;
-import model.User;
 
 import java.time.LocalDateTime;
 
 public class RentDTO {
-    @NotNull(message = "Client is required")
-    private User client;
+    @NotNull(message = "Client id is required")
+    private Long clientId;
 
-    @NotNull(message = "Plant is required")
-    private Plant plant;
+    @NotNull(message = "Plant id is required")
+    private Long plantId;
 
     private LocalDateTime rentStart;
     private LocalDateTime rentEnd;
 
-    public User getClient() {
-        return client;
+    public Long getClientId() {
+        return clientId;
     }
 
-    public void setClient(User client) {
-        this.client = client;
+    public void setClientId(Long clientId) {
+        this.clientId = clientId;
     }
 
-    public Plant getPlant() {
-        return plant;
+    public Long getPlantId() {
+        return plantId;
     }
 
-    public void setPlant(Plant plant) {
-        this.plant = plant;
+    public void setPlantId(Long plantId) {
+        this.plantId = plantId;
     }
 
     public LocalDateTime getRentStart() {

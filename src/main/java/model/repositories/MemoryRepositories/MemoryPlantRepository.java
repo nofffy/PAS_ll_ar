@@ -1,5 +1,6 @@
 package model.repositories.MemoryRepositories;
 
+import Exeptions.ResourceNotFoundException;
 import model.Plant;
 import model.repositories.PlantRepository;
 
@@ -26,7 +27,7 @@ public class MemoryPlantRepository implements PlantRepository {
     @Override
     public void addPlant(Plant plant) {
         if (plant == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Can't be null");
         }
         Long newId = curId.getAndIncrement();
         plant.setId(newId);
@@ -36,7 +37,7 @@ public class MemoryPlantRepository implements PlantRepository {
     @Override
     public Plant getPlant(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Can't be null");
         }
         return plants.get(id);
     }
@@ -44,7 +45,7 @@ public class MemoryPlantRepository implements PlantRepository {
     @Override
     public void removePlant(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Can't be null");
         }
         plants.remove(id);
     }

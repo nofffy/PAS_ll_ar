@@ -1,6 +1,6 @@
 package controllers;
 
-import dtos.PlantDTO;
+import DTOs.PlantDTO;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -39,34 +39,20 @@ public class PlantController {
     @GET
     @Path("/{id}")
     public Response getPlantById(@PathParam("id") Long id) {
-        try {
-            Plant plant = plantManager.getPlant(id);
-            return Response.ok(plant).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        }
+        Plant plant = plantManager.getPlant(id);
+        return Response.ok(plant).build();
     }
 
     @POST
     public Response createPlant(@Valid PlantDTO plant) {
-        try {
-            plantManager.createPlant(plant);
-            return Response.status(Response.Status.CREATED).build(); // 201 Created
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        }
+        plantManager.createPlant(plant);
+        return Response.status(Response.Status.CREATED).build(); // 201 Created
     }
 
     @DELETE
     @Path("/{id}")
     public Response deletePlant(@PathParam("id") Long id) {
-        try {
-            plantManager.removePlant(id);
-            return Response.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (IllegalStateException e) {
-            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
-        }
+        plantManager.removePlant(id);
+        return Response.noContent().build();
     }
 }

@@ -1,6 +1,7 @@
 package managers;
 
-import dtos.PlantDTO;
+import Exeptions.ResourceConflictException;
+import DTOs.PlantDTO;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import model.Plant;
@@ -8,7 +9,7 @@ import model.PlantTypes.Basic;
 import model.PlantTypes.Carnivorous;
 import model.PlantTypes.Monstera;
 import model.PlantTypes.Succulent;
-import model.repositories.MemoryRepositories.MemoryPlantRepository;
+import model.repositories.PlantRepository;
 import model.repositories.RentRepository;
 
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
 public class PlantManager {
 
     @Inject
-    private MemoryPlantRepository mpr;
+    private PlantRepository plantRepository;
 
     @Inject
     private RentRepository rentRepository;
@@ -52,21 +53,21 @@ public class PlantManager {
             throw new IllegalArgumentException("Unknown plant type");
         }
 
-        mpr.addPlant(newPlant);
+        plantRepository.addPlant(newPlant);
     }
 
-    public Plant getPlant(Long id) { return mpr.getPlant(id); }
+    public Plant getPlant(Long id) { return plantRepository.getPlant(id); }
 
     public void removePlant(Long id) {
         if (!rentRepository.getCurrentRentsByPlantId(id).isEmpty() || !rentRepository.getPastRentsByPlantId(id).isEmpty()) {
-            throw new IllegalStateException("Can't remove this plant because it has history of rents");
+            throw new ResourceConflictException("Can't remove this plant because it has history of rents");
         }
-        mpr.removePlant(id);
+        plantRepository.removePlant(id);
     }
 
-    public List<Plant> getPlants() { return mpr.getPlants(); }
+    public List<Plant> getPlants() { return plantRepository.getPlants(); }
 
-    public List<Plant> findAllAvailable() { return mpr.findAllAvailable(); }
+    public List<Plant> findAllAvailable() { return plantRepository.findAllAvailable(); }
 
-    public List<Plant> findAllUnavailable() { return mpr.findAllUnavailable(); }
+    public List<Plant> findAllUnavailable() { return plantRepository.findAllUnavailable(); }
 }

@@ -1,5 +1,7 @@
 package model.repositories.MemoryRepositories;
 
+import Exeptions.ResourceConflictException;
+import Exeptions.ResourceNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
 import model.Rent;
 import model.repositories.RentRepository;
@@ -21,7 +23,7 @@ public class MemoryRentRepository implements RentRepository {
     @Override
     public Rent getRent(Long id) {
         if(id == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Can't be null");
         }
         return rents.get(id);
     }
@@ -29,12 +31,12 @@ public class MemoryRentRepository implements RentRepository {
     @Override
     public void addRent(Rent rent) {
         if(rent == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Can't be null");
         }
         Long plantId = rent.getPlant().getId();
         Rent existingRent = activeRentsByPlantId.putIfAbsent(plantId, rent);
         if(existingRent != null) {
-            throw new IllegalArgumentException();
+            throw new ResourceConflictException("Plant with id " + plantId + " is rented");
         }
         Long newId = curId.getAndIncrement();
         rent.setId(newId);
@@ -44,14 +46,14 @@ public class MemoryRentRepository implements RentRepository {
     @Override
     public void finishRent(Long id) {
         if(id == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Can't be null");
         }
         Rent rent = rents.get(id);
         if(rent == null) {
-            throw new IllegalArgumentException("Rent doesn't exist");
+            throw new ResourceNotFoundException("Rent doesn't exist");
         }
         if(rent.getRentEnd() != null) {
-            throw new IllegalStateException("This rent is already finished");
+            throw new ResourceConflictException("Rent is already finished");
         }
         Long plantId = rent.getPlant().getId();
         boolean wasRemoved = activeRentsByPlantId.remove(plantId, rent);
@@ -63,14 +65,14 @@ public class MemoryRentRepository implements RentRepository {
     @Override
     public void removeRent(Long id) {
         if(id == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Can't be null");
         }
         Rent rent = rents.get(id);
         if(rent == null) {
-            throw new IllegalArgumentException("Rent doesn't exist");
+            throw new ResourceNotFoundException("Rent doesn't exist");
         }
         if(rent.getRentEnd() != null) {
-            throw new IllegalStateException("Can't remove finished rents");
+            throw new ResourceConflictException("Can't remove finished rents");
         }
         Long plantId = rent.getPlant().getId();
         boolean wasRemoved = activeRentsByPlantId.remove(plantId, rent);
@@ -84,8 +86,8 @@ public class MemoryRentRepository implements RentRepository {
         if(id == null) {
             return List.of();
         }
-        return rents.values().stream().
-                filter(rent -> rent.getClient().getId().equals(id) && rent.getRentEnd() != null)
+        return rents.values().stream()
+                .filter(rent -> rent.getClient().getId().equals(id) && rent.getRentEnd() != null)
                 .collect(Collectors.toList());
     }
 

@@ -1,4 +1,4 @@
-package plantExeptions;
+package Exeptions;
 
 public class UserLoginAlreadyUsedException extends RuntimeException {
     public UserLoginAlreadyUsedException(String message) {

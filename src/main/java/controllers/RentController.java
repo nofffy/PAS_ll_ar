@@ -1,6 +1,6 @@
 package controllers;
 
-import dtos.RentDTO;
+import DTOs.RentDTO;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -29,44 +29,27 @@ public class RentController {
     @GET
     @Path("/{id}")
     public Response getRentById(@PathParam("id") Long id) {
-        try {
-            Rent rent = rentManager.getRent(id);
-            return Response.ok(rent).build(); // 200 OK
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        }
+        Rent rent = rentManager.getRent(id);
+        return Response.ok(rent).build(); // 200 OK
     }
 
     @POST
     public Response createRent(@Valid RentDTO rent) {
-        try {
-            rentManager.createRent(rent);
-            return Response.status(Response.Status.CREATED).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        }
+        rentManager.createRent(rent);
+        return Response.status(Response.Status.CREATED).build();
     }
 
     @DELETE
     @Path("/{id}")
     public Response deleteRent(@PathParam("id") Long id) {
-        try {
-            rentManager.removeRent(id);
-            return Response.status(Response.Status.NO_CONTENT).build();
-        } catch (IllegalStateException e) {
-            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        }
+        rentManager.removeRent(id);
+        return Response.status(Response.Status.NO_CONTENT).build();
     }
 
     @GET
     @Path("/client/{id}/current")
     public Response getCurrentRentsByClientId(@PathParam("id") Long id) {
         List<Rent> rents = rentManager.getCurrentRentsByClientId(id);
-        if (rents.isEmpty()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
         return Response.ok(rents).build();
     }
 
@@ -74,9 +57,6 @@ public class RentController {
     @Path("/client/{id}/past")
     public Response getPastRentsByClientId(@PathParam("id") Long id) {
         List<Rent> rents = rentManager.getPastRentsByClientId(id);
-        if (rents.isEmpty()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
         return Response.ok(rents).build();
     }
 
@@ -84,9 +64,6 @@ public class RentController {
     @Path("/plant/{id}/current")
     public Response getCurrentRentsByPlantId(@PathParam("id") Long id) {
         List<Rent> rents = rentManager.getCurrentRentsByPlantId(id);
-        if (rents.isEmpty()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
         return Response.ok(rents).build();
     }
 
@@ -94,9 +71,6 @@ public class RentController {
     @Path("/plant/{id}/past")
     public Response getPastRentsByPlantId(@PathParam("id") Long id) {
         List<Rent> rents = rentManager.getPastRentsByPlantId(id);
-        if (rents.isEmpty()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
         return Response.ok(rents).build();
     }
 }

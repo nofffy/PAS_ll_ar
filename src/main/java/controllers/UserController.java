@@ -1,6 +1,6 @@
 package controllers;
 
-import dtos.UserDTO;
+import DTOs.UserDTO;
 import jakarta.validation.Valid;
 import managers.UserManager;
 import model.User;
@@ -10,7 +10,6 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import plantExeptions.UserLoginAlreadyUsedException;
 
 import java.util.List;
 
@@ -43,55 +42,34 @@ public class UserController {
     @GET
     @Path("/{id}")
     public Response getUserById(@PathParam("id") Long id) {
-        try {
-            User user = userManager.getUser(id);
-            return Response.ok(user).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        }
+        User user = userManager.getUser(id);
+        return Response.ok(user).build();
     }
 
     @GET
     @Path("/login/{login}")
     public Response getUserByExactLogin(@PathParam("login") String login) {
         User user = userManager.getUserByLogin(login);
-        if (user == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
         return Response.ok(user).build();
     }
 
     @POST
     public Response createUser(@Valid UserDTO user) {
-        try {
-            userManager.createUser(user);
-            return Response.status(Response.Status.CREATED).build(); // 201 Created
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-        } catch (UserLoginAlreadyUsedException e) {
-            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
-        }
+        userManager.createUser(user);
+        return Response.status(Response.Status.CREATED).build(); // 201 Created
     }
 
     @POST
     @Path("/{id}/activate")
     public Response activateUser(@PathParam("id") Long id) {
-        try {
-            userManager.activateUser(id);
-            return Response.ok().build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        }
+        userManager.activateUser(id);
+        return Response.ok().build();
     }
 
     @POST
     @Path("/{id}/deactivate")
     public Response deactivateUser(@PathParam("id") Long id) {
-        try {
-            userManager.deactivateUser(id);
-            return Response.ok().build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        }
+        userManager.deactivateUser(id);
+        return Response.ok().build();
     }
 }

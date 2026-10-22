@@ -1,13 +1,14 @@
 package managers;
 
-import dtos.UserDTO;
+import Exeptions.ResourceNotFoundException;
+import DTOs.UserDTO;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import model.User;
 import model.UserTypes.Admin;
 import model.UserTypes.Client;
 import model.UserTypes.Gardener;
-import model.repositories.MemoryRepositories.MemoryUserRepository;
+import model.repositories.UserRepository;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
 public class UserManager {
 
     @Inject
-    private MemoryUserRepository mur;
+    private UserRepository userRepository;
 
     public void createUser(UserDTO user) {
         User newUser;
@@ -36,42 +37,46 @@ public class UserManager {
             throw new IllegalArgumentException("Unknown user type");
         }
 
-        mur.addUser(newUser);
+        userRepository.addUser(newUser);
     }
 
     public User getUser(Long id){
-        return mur.getUser(id);
+        return userRepository.getUser(id);
     }
 
-    public User getUserByLogin(String login){
-        return mur.getUserByLogin(login);
+    public User getUserByLogin(String login) {
+        User user = userRepository.getUserByLogin(login);
+        if (user == null) {
+            throw new ResourceNotFoundException("User with login: " + login + " not found");
+        }
+        return user;
     }
 
     public List<User> getUsersByLogin(String loginPattern){
-        return mur.getUsersByLoginPattern(loginPattern);
+        return userRepository.getUsersByLoginPattern(loginPattern);
     }
 
     public List<User> getAllUsers(){
-        return mur.getUsers();
+        return userRepository.getUsers();
     }
 
     public void activateUser(Long id){
-        User user = mur.getUser(id);
+        User user = userRepository.getUser(id);
         if (user == null) {
-            throw new IllegalArgumentException();
+            throw new ResourceNotFoundException("User with id " + id + " not found");
         }
         user.setActive(true);
     }
 
     public void deactivateUser(Long id){
-        User user = mur.getUser(id);
+        User user = userRepository.getUser(id);
         if (user == null) {
-            throw new IllegalArgumentException();
+            throw new ResourceNotFoundException("User with id " + id + " not found");
         }
         user.setActive(false);
     }
 
-    public List<User> findAllActiveUsers(){ return mur.findAllActive(); }
+    public List<User> findAllActiveUsers(){ return userRepository.findAllActive(); }
 
-    public List<User> findAllUnactiveUsers(){ return mur.findAllUnactive(); }
+    public List<User> findAllUnactiveUsers(){ return userRepository.findAllUnactive(); }
 }
