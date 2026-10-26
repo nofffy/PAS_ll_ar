@@ -2,6 +2,7 @@ package model.repositories.MemoryRepositories;
 
 import Exeptions.ResourceNotFoundException;
 import Exeptions.UserLoginAlreadyUsedException;
+import model.Plant;
 import model.User;
 import model.repositories.UserRepository;
 
@@ -66,6 +67,15 @@ public class MemoryUserRepository implements UserRepository {
     @Override
     public List<User> getUsers() {
         return new ArrayList<>(users.values());
+    }
+
+    @Override
+    public void updateUser(Long id, User user) {
+        if (id == null || user == null) {
+            throw new IllegalArgumentException("Id or user can't be null");
+        }
+        user.setId(id);
+        users.put(id, user);
     }
 
     @Override

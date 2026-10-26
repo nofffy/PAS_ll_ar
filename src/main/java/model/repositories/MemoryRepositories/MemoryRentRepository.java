@@ -75,10 +75,8 @@ public class MemoryRentRepository implements RentRepository {
             throw new ResourceConflictException("Can't remove finished rents");
         }
         Long plantId = rent.getPlant().getId();
-        boolean wasRemoved = activeRentsByPlantId.remove(plantId, rent);
-        if (wasRemoved) {
-            rent.endRent();
-        }
+        activeRentsByPlantId.remove(plantId, rent);
+        rents.remove(id);
     }
 
     @Override

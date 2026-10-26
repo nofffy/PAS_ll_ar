@@ -27,7 +27,13 @@ public class RentManager {
     @Inject
     private PlantRepository plantRepository;
 
-    public Rent getRent(Long id) { return rentRepository.getRent(id); }
+    public Rent getRent(Long id) {
+        Rent rent = rentRepository.getRent(id);
+        if (rent == null) {
+            throw new ResourceNotFoundException("Rent with id " + id + " not found");
+        }
+        return rent;
+    }
 
     public void createRent(RentDTO rent) {
         Long userId = rent.getClientId();

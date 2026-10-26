@@ -49,6 +49,13 @@ public class PlantController {
         return Response.status(Response.Status.CREATED).build(); // 201 Created
     }
 
+    @PUT
+    @Path("/{id}")
+    public Response updatePlant(@PathParam("id") Long id, @Valid PlantDTO plantDTO) {
+        plantManager.updatePlant(id, plantDTO);
+        return Response.noContent().build();
+    }
+
     @DELETE
     @Path("/{id}")
     public Response deletePlant(@PathParam("id") Long id) {

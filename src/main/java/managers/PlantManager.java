@@ -2,6 +2,7 @@ package managers;
 
 import Exeptions.ResourceConflictException;
 import DTOs.PlantDTO;
+import Exeptions.ResourceNotFoundException;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import model.Plant;
@@ -56,7 +57,50 @@ public class PlantManager {
         plantRepository.addPlant(newPlant);
     }
 
-    public Plant getPlant(Long id) { return plantRepository.getPlant(id); }
+    public Plant getPlant(Long id) {
+        Plant plant = plantRepository.getPlant(id);
+        if (plant == null) {
+            throw new ResourceNotFoundException("Plant with id " + id + " not found");
+        }
+        return plant;
+    }
+
+    public void updatePlant(Long id, PlantDTO plant) {
+        Plant existingPlant = plantRepository.getPlant(id);
+        if (existingPlant == null) {
+            throw new IllegalArgumentException("Plant with id " + id + " does not exist");
+        }
+
+        Plant updatedPlant;
+        boolean isAvailable = true;
+        if (plant.isAvailable() != null) {
+            isAvailable = plant.isAvailable();
+        }
+
+        String type = plant.getType();
+        if (type.equals("BASIC")) {
+            updatedPlant = new Basic(plant.getName(), plant.getColor(), plant.getCost(), isAvailable);
+        } else if (type.equals("CARNIVOROUS")) {
+            if (plant.getFavouriteFood() == null) {
+                throw new IllegalArgumentException("Unknown favourite food info");
+            }
+            updatedPlant = new Carnivorous(plant.getName(), plant.getColor(), plant.getCost(), isAvailable, plant.getFavouriteFood());
+        } else if (type.equals("MONSTERA")) {
+            if (plant.getLeafSize() == null) {
+                throw new IllegalArgumentException("Unknown leaf size");
+            }
+            updatedPlant = new Monstera(plant.getName(), plant.getColor(), plant.getCost(), isAvailable, plant.getLeafSize());
+        } else if (type.equals("SUCCULENT")) {
+            if (plant.isSpiky() == null) {
+                throw new IllegalArgumentException("Unknown spiky info");
+            }
+            updatedPlant = new Succulent(plant.getName(), plant.getColor(), plant.getCost(), isAvailable, plant.isSpiky());
+        } else {
+            throw new IllegalArgumentException("Unknown plant type");
+        }
+
+        plantRepository.updatePlant(id, updatedPlant);
+    }
 
     public void removePlant(Long id) {
         if (!rentRepository.getCurrentRentsByPlantId(id).isEmpty() || !rentRepository.getPastRentsByPlantId(id).isEmpty()) {

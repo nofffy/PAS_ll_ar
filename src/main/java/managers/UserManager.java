@@ -41,7 +41,11 @@ public class UserManager {
     }
 
     public User getUser(Long id){
-        return userRepository.getUser(id);
+        User user = userRepository.getUser(id);
+        if (user == null) {
+            throw new ResourceNotFoundException("User with id " + id + " not found");
+        }
+        return user;
     }
 
     public User getUserByLogin(String login) {
@@ -58,6 +62,33 @@ public class UserManager {
 
     public List<User> getAllUsers(){
         return userRepository.getUsers();
+    }
+
+    public void updateUser(Long id, UserDTO user) {
+        User existingUser = userRepository.getUser(id);
+        if (existingUser == null) {
+            throw new ResourceNotFoundException("User with id " + id + " does not exist");
+        }
+
+        User updatedUser;
+
+        boolean isActive = true;
+        if (user.getActive() != null) {
+            isActive = user.getActive();
+        }
+
+        String type = user.getType();
+        if (type.equals("ADMIN")) {
+            updatedUser = new Admin(user.getLogin(), isActive);
+        } else if (type.equals("GARDENER")) {
+            updatedUser = new Gardener(user.getLogin(), isActive);
+        } else if (type.equals("CLIENT")) {
+            updatedUser = new Client(user.getLogin(), isActive);
+        } else {
+            throw new IllegalArgumentException("Unknown user type");
+        }
+
+        userRepository.updateUser(id, updatedUser);
     }
 
     public void activateUser(Long id){

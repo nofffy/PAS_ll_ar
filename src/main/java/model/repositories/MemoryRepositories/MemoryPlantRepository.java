@@ -43,6 +43,15 @@ public class MemoryPlantRepository implements PlantRepository {
     }
 
     @Override
+    public void updatePlant(Long id, Plant plant) {
+        if (id == null || plant == null) {
+            throw new IllegalArgumentException("Id or plant can't be null");
+        }
+        plant.setId(id);
+        plants.put(id, plant);
+    }
+
+    @Override
     public void removePlant(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("Can't be null");

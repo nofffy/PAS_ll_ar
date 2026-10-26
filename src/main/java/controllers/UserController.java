@@ -59,6 +59,13 @@ public class UserController {
         return Response.status(Response.Status.CREATED).build(); // 201 Created
     }
 
+    @PUT
+    @Path("/{id}")
+    public Response updateUser(@PathParam("id") Long id, @Valid UserDTO userDTO) {
+        userManager.updateUser(id, userDTO);
+        return Response.noContent().build();
+    }
+
     @POST
     @Path("/{id}/activate")
     public Response activateUser(@PathParam("id") Long id) {
