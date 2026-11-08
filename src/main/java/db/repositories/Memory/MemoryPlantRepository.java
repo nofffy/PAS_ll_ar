@@ -1,41 +1,34 @@
-package model.repositories.MemoryRepositories;
+package db.repositories.Memory;
 
-import Exeptions.ResourceNotFoundException;
+import jakarta.enterprise.inject.Typed;
 import model.Plant;
 import model.repositories.PlantRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
+@Typed(MemoryPlantRepository.class)
 public class MemoryPlantRepository implements PlantRepository {
+    private final Map<String, Plant> plants = new ConcurrentHashMap<>();
 
-    private Map<Long, Plant> plants = new ConcurrentHashMap<>();
-
-    private final AtomicLong curId = new AtomicLong(1);
+    public MemoryPlantRepository() {}
 
     @Override
     public void addPlant(Plant plant) {
         if (plant == null) {
             throw new IllegalArgumentException("Can't be null");
         }
-        Long newId = curId.getAndIncrement();
+        String newId = UUID.randomUUID().toString();
         plant.setId(newId);
         plants.put(plant.getId(), plant);
     }
 
     @Override
-    public Plant getPlant(Long id) {
+    public Plant getPlant(String id) {
         if (id == null) {
             throw new IllegalArgumentException("Can't be null");
         }
@@ -43,16 +36,15 @@ public class MemoryPlantRepository implements PlantRepository {
     }
 
     @Override
-    public void updatePlant(Long id, Plant plant) {
-        if (id == null || plant == null) {
-            throw new IllegalArgumentException("Id or plant can't be null");
+    public void updatePlant(Plant plant) {
+        if (plant == null) {
+            throw new IllegalArgumentException("Can't be null");
         }
-        plant.setId(id);
-        plants.put(id, plant);
+        plants.put(plant.getId(), plant);
     }
 
     @Override
-    public void removePlant(Long id) {
+    public void removePlant(String id) {
         if (id == null) {
             throw new IllegalArgumentException("Can't be null");
         }

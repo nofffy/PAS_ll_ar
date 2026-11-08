@@ -1,32 +1,32 @@
-package DTOs;
+package enpoint.DTOs;
 
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
-public class RentDTO {
+public class CreateUpdateRentDTO {
     @NotNull(message = "Client id is required")
-    private Long clientId;
+    private String clientId;
 
     @NotNull(message = "Plant id is required")
-    private Long plantId;
+    private String plantId;
 
     private LocalDateTime rentStart;
     private LocalDateTime rentEnd;
 
-    public Long getClientId() {
+    public String getClientId() {
         return clientId;
     }
 
-    public void setClientId(Long clientId) {
+    public void setClientId(String clientId) {
         this.clientId = clientId;
     }
 
-    public Long getPlantId() {
+    public String getPlantId() {
         return plantId;
     }
 
-    public void setPlantId(Long plantId) {
+    public void setPlantId(String plantId) {
         this.plantId = plantId;
     }
 
@@ -46,3 +46,4 @@ public class RentDTO {
         this.rentEnd = rentEnd;
     }
 }
+

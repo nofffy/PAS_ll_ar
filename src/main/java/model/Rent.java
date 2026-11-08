@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class Rent {
-    private Long id;
+    private String id;
     private User client;
     private Plant plant;
     private LocalDateTime rentStart;
@@ -17,11 +17,11 @@ public class Rent {
         this.rentStart = rentStart;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -48,6 +48,8 @@ public class Rent {
     }
 
     public LocalDateTime getRentEnd() { return rentEnd; }
+
+    public void setRentEnd(LocalDateTime rentEnd) { this.rentEnd = rentEnd; }
 
     public void endRent() { this.rentEnd = LocalDateTime.now(); }
 }

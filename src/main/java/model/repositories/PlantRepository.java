@@ -5,10 +5,10 @@ import model.Plant;
 import java.util.List;
 
 public interface PlantRepository {
-    Plant getPlant(Long id); //UUID?
+    Plant getPlant(String id); //YES UUID!!
     void addPlant(Plant plant);
-    void updatePlant(Long id, Plant plant);
-    void removePlant(Long id);
+    void updatePlant(Plant plant);
+    void removePlant(String id);
 
     List<Plant> getPlants();
     List<Plant> findAllAvailable();

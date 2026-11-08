@@ -1,8 +1,7 @@
-package model.repositories.MemoryRepositories;
+package db.repositories.Memory;
 
-import Exeptions.ResourceNotFoundException;
 import Exeptions.UserLoginAlreadyUsedException;
-import model.Plant;
+import jakarta.enterprise.inject.Typed;
 import model.User;
 import model.repositories.UserRepository;
 
@@ -11,24 +10,24 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
+@Typed(MemoryUserRepository.class)
 public class MemoryUserRepository implements UserRepository {
-
-    private final Map<Long, User> users = new ConcurrentHashMap<>();
+    private final Map<String, User> users = new ConcurrentHashMap<>();
     private final Map<String, User> usersByLogin = new ConcurrentHashMap<>();
 
-    private final AtomicLong curId = new AtomicLong(1);
+    public MemoryUserRepository() {}
 
     @Override
     public void addUser(User user) {
         if (user == null) {
             throw new IllegalArgumentException("Can't be null");
         }
-        Long newId = curId.getAndIncrement(); //jezeli juz istnieje uzytkownik o takim loginie to spalimy ID
+        String newId = UUID.randomUUID().toString();
         user.setId(newId);
         User existingUser = usersByLogin.putIfAbsent(user.getLogin(), user);
         if (existingUser != null) {
@@ -38,7 +37,7 @@ public class MemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public User getUser(Long id) {
+    public User getUser(String id) {
         if (id == null) {
             throw new IllegalArgumentException("Can't be null");
         }
@@ -56,7 +55,7 @@ public class MemoryUserRepository implements UserRepository {
     @Override
     public List<User> getUsersByLoginPattern(String loginPattern) { //tu mozna by bylo zrobic regexa, albo jakis wczesniej ustalony pattern ale w wymaganiach nieopisane :3
         if  (loginPattern == null) {
-            return List.of();
+            throw new IllegalArgumentException("Can't be null");
         }
         final String lp = loginPattern.toLowerCase();
         return usersByLogin.values().stream()
@@ -70,12 +69,11 @@ public class MemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public void updateUser(Long id, User user) {
-        if (id == null || user == null) {
-            throw new IllegalArgumentException("Id or user can't be null");
+    public void updateUser(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("Can't be null");
         }
-        user.setId(id);
-        users.put(id, user);
+        users.put(user.getId(), user);
     }
 
     @Override
@@ -86,7 +84,7 @@ public class MemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public List<User> findAllUnactive() {
+    public List<User> findAllInactive() {
         return users.values().stream()
                 .filter(user -> !user.isActive())
                 .collect(Collectors.toList());

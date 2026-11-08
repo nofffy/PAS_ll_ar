@@ -6,11 +6,11 @@ import java.util.List;
 
 public interface UserRepository {
     void addUser(User User);
-    User getUser(Long id);
+    User getUser(String id);
     User getUserByLogin(String login);
     List<User> getUsersByLoginPattern(String loginPattern);
-    void updateUser(Long id, User user);
+    void updateUser(User user);
     List<User> getUsers();
     List<User> findAllActive();
-    List<User> findAllUnactive();
+    List<User> findAllInactive();
 }

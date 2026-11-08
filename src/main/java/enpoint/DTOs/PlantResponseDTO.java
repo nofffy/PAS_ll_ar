@@ -1,32 +1,24 @@
-package DTOs;
+package enpoint.DTOs;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
-
-public class PlantDTO {
-    @NotBlank(message = "Name is required")
+public class PlantResponseDTO {
+    private String id;
     private String name;
-
-    @NotBlank(message = "Color is required")
     private String color;
-
-    @NotNull(message = "Cost is required")
-    @Positive(message = "Cost must be greater than 0")
     private Double cost;
-
     private Boolean available;
-
-    @NotBlank(message = "Plant type is required")
-    @Pattern(regexp = "^(BASIC|CARNIVOROUS|MONSTERA|SUCCULENT)$", message = "Plant type has to be one of: BASIC, CARNIVOROUS, MONSTERA, SUCCULENT")
     private String type;
 
     private String favouriteFood;
     private Integer leafSize;
     private Boolean spiky;
 
-    public PlantDTO() {}
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -52,7 +44,7 @@ public class PlantDTO {
         this.cost = cost;
     }
 
-    public Boolean isAvailable() {
+    public Boolean getAvailable() {
         return available;
     }
 
@@ -84,9 +76,11 @@ public class PlantDTO {
         this.leafSize = leafSize;
     }
 
-    public Boolean isSpiky() {
+    public Boolean getSpiky() {
         return spiky;
     }
 
-    public void setSpiky(Boolean spiky) { this.spiky = spiky; }
+    public void setSpiky(Boolean spiky) {
+        this.spiky = spiky;
+    }
 }

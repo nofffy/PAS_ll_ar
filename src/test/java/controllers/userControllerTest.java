@@ -1,26 +1,63 @@
 package controllers;
 
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
+
+import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 
 public class userControllerTest {
+
+    private String uniqueLogin(String prefix) {
+        return prefix + "-" + UUID.randomUUID();
+    }
+
+    private String extractId(Response response) {
+        String location = response.getHeader("Location");
+        if (location == null) {
+            throw new IllegalStateException("Brak nagłówka Location w odpowiedzi 201");
+        }
+        return location.substring(location.lastIndexOf('/') + 1);
+    }
+
+    private String createUser(String login, boolean active, String type) {
+        String json = """
+                {
+                    "login": "%s",
+                    "active": %s,
+                    "type": "%s"
+                }
+                """.formatted(login, active, type);
+
+        Response response = given().contentType(ContentType.JSON)
+                .body(json)
+                .when()
+                .post("/api/users")
+                .then()
+                .statusCode(201)
+                .extract().response();
+
+        return extractId(response);
+    }
+
     //TESTY CRU(D)
     @Test
     public void CreateUser() {
-        String validUserJson = """
+        String login = uniqueLogin("loginnnovember");
+        String json = """
                 {
-                    "login": "loginnnovember",
+                    "login": "%s",
                     "active": true,
                     "type": "CLIENT"
                 }
-                """;
+                """.formatted(login);
 
         given().contentType(ContentType.JSON)
-                .body(validUserJson)
+                .body(json)
                 .when()
                 .post("/api/users")
                 .then()
@@ -30,66 +67,70 @@ public class userControllerTest {
                 .get("/api/users")
                 .then()
                 .statusCode(200)
-                .body("login", hasItem("loginnnovember"));
+                .body("login", hasItem(login));
     }
 
     @Test
     public void ReadUser() {
+        String login = uniqueLogin("read-user");
+        String id = createUser(login, true, "CLIENT");
+
         given().when()
-                .get("/api/users/1")
+                .get("/api/users/" + id)
                 .then()
                 .statusCode(200)
-                .body("login", equalTo("admin1"))
+                .body("login", equalTo(login))
                 .body("active", equalTo(true));
     }
 
     @Test
     public void UpdateUser() {
-        given().when()
-                .get("/api/users/4")
-                .then()
-                .statusCode(200)
-                .body("login", equalTo("banned_michael"));
+        String login = uniqueLogin("update-user");
+        String id = createUser(login, false, "CLIENT");
 
-        String updatedUserJson = """
+        String updatedLogin = uniqueLogin("unbanned_michael");
+        String updatedJson = """
                 {
-                    "login": "unbanned_michael",
+                    "login": "%s",
                     "active": true,
                     "type": "CLIENT"
                 }
-                """;
+                """.formatted(updatedLogin);
 
         given().contentType(ContentType.JSON)
-                .body(updatedUserJson)
+                .body(updatedJson)
                 .when()
-                .put("/api/users/4")
+                .put("/api/users/" + id)
                 .then()
                 .statusCode(204);
 
         given().when()
-                .get("/api/users/4")
+                .get("/api/users/" + id)
                 .then()
                 .statusCode(200)
-                .body("login", equalTo("unbanned_michael"))
+                .body("login", equalTo(updatedLogin))
                 .body("active", equalTo(true));
     }
 
     @Test
     public void DeactivateUser() {
+        String login = uniqueLogin("deactivate-user");
+        String id = createUser(login, true, "CLIENT");
+
         given().when()
-                .get("/api/users/2")
+                .get("/api/users/" + id)
                 .then()
                 .statusCode(200)
                 .body("active", equalTo(true));
 
         given().when()
                 .contentType(ContentType.JSON)
-                .post("/api/users/2/deactivate")
+                .post("/api/users/" + id + "/deactivate")
                 .then()
                 .statusCode(200);
 
         given().when()
-                .get("/api/users/2")
+                .get("/api/users/" + id)
                 .then()
                 .statusCode(200)
                 .body("active", equalTo(false));
@@ -134,16 +175,19 @@ public class userControllerTest {
 
     @Test
     public void uniqueLoginTest() {
-        String duplicateUserJson = """
+        String login = uniqueLogin("duplicate-user");
+        createUser(login, true, "CLIENT");
+
+        String duplicateJson = """
                 {
-                    "login": "admin1",
+                    "login": "%s",
                     "active": true,
                     "type": "CLIENT"
                 }
-                """;
+                """.formatted(login);
 
         given().contentType(ContentType.JSON)
-                .body(duplicateUserJson)
+                .body(duplicateJson)
                 .when()
                 .post("/api/users")
                 .then()

@@ -1,13 +1,14 @@
 package model;
 
 public abstract class Plant {
-    private Long id = null; //UUID??
+    private String id;
     private String name;
     private String color;
     private double cost;
     private boolean available;
 
     public Plant(String name, String color, double cost, boolean available) {
+        this.id = null;
         this.name = name;
         this.color = color;
         this.cost = cost;
@@ -46,9 +47,9 @@ public abstract class Plant {
         this.available = available;
     }
 
-    public Long getId() { return id; }
+    public String getId() { return id; }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 }
