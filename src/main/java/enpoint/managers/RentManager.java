@@ -1,5 +1,6 @@
 package enpoint.managers;
 
+import Exeptions.ResourceConflictException;
 import Exeptions.ResourceNotFoundException;
 import enpoint.DTOmappers.RentDTOMapper;
 import enpoint.DTOs.CreateUpdateRentDTO;
@@ -9,10 +10,12 @@ import jakarta.inject.Inject;
 import model.Plant;
 import model.Rent;
 import model.User;
+import model.UserTypes.Client;
 import model.repositories.PlantRepository;
 import model.repositories.RentRepository;
 import model.repositories.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequestScoped
@@ -38,8 +41,35 @@ public class RentManager {
         return RentDTOMapper.ModelToDTO(rent);
     }
 
-    public RentResponseDTO createRent(CreateUpdateRentDTO rent) {
-        Rent newRent = RentDTOMapper.DTOToModel(rent, userRepository, plantRepository);
+    public RentResponseDTO createRent(CreateUpdateRentDTO rentDTO) {
+        String userId = rentDTO.getClientId();
+        User user = userRepository.getUser(userId);
+        if (user == null) {
+            throw new ResourceNotFoundException("User with id " + userId + " not found");
+        }
+        if (!user.isActive()) {
+            throw new ResourceConflictException("User is deactivated, can't rent");
+        }
+        List<Rent> activeRents = rentRepository.getCurrentRentsByClientId(userId);
+        if (user instanceof Client client) {
+            if (activeRents.size() >= client.MAX_RENTS) {
+                throw new ResourceConflictException("Client has reached max active rents: " + client.MAX_RENTS);
+            }
+        }
+
+        String plantId = rentDTO.getPlantId();
+        Plant plant = plantRepository.getPlant(plantId);
+        if (plant == null) {
+            throw new ResourceNotFoundException("Plant with id " + plantId + " not found");
+        }
+
+        LocalDateTime startTime;
+        if (rentDTO.getRentStart() != null) {
+            startTime = rentDTO.getRentStart();
+        } else {
+            startTime = LocalDateTime.now();
+        }
+        Rent newRent = new Rent(user, plant, startTime);
         rentRepository.addRent(newRent);
         return RentDTOMapper.ModelToDTO(newRent);
     }
