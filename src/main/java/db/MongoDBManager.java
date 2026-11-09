@@ -9,6 +9,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.jsr310.Jsr310CodecProvider;
 import org.bson.codecs.pojo.PojoCodecProvider;
 
 import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
@@ -22,7 +23,7 @@ public class MongoDBManager {
 
     static {
         CodecProvider pojoCodecProvider = PojoCodecProvider.builder().automatic(true).build();
-        CodecRegistry pojoCodecRegistry = fromRegistries(getDefaultCodecRegistry(), fromProviders(pojoCodecProvider));
+        CodecRegistry pojoCodecRegistry = fromRegistries(getDefaultCodecRegistry(), fromProviders(pojoCodecProvider, new Jsr310CodecProvider()));
 
         String uri = "mongodb://admin:adminpassword@mongodb1:27017,mongodb2:27018,mongodb3:27019/?authSource=admin&replicaSet=replica_set_single";
         ConnectionString connectionString = new ConnectionString(uri);

@@ -41,7 +41,7 @@ public class MongoPlantMapper {
     public static Plant EntToObj(plantEnt ent) {
         if (ent == null) return null;
 
-        String id = ent.getId().toHexString();
+        String id = ent.getId() != null ? ent.getId().toHexString() : null;
         Plant plant;
 
         String type = ent.getPlantType();

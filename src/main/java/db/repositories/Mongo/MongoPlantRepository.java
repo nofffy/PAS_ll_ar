@@ -1,8 +1,10 @@
 package db.repositories.Mongo;
 
+import Exeptions.ResourceNotFoundException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.UpdateResult;
 import db.entities.Mongo.plantEnt;
 import db.mappers.Mongo.MongoPlantMapper;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -59,10 +61,13 @@ public class MongoPlantRepository implements PlantRepository {
             throw new IllegalArgumentException("Can't be null");
         }
         if (!ObjectId.isValid(plant.getId())) {
-            return;
+            throw new ResourceNotFoundException("Plant with id " + plant.getId() + " not found");
         }
         plantEnt ent = MongoPlantMapper.ObjToEnt(plant);
-        collection.replaceOne(Filters.eq("_id", new ObjectId(plant.getId())), ent);
+        UpdateResult result = collection.replaceOne(Filters.eq("_id", new ObjectId(plant.getId())), ent);
+        if (result.getMatchedCount() == 0) {
+            throw new ResourceNotFoundException("Plant with id " + plant.getId() + " not found");
+        }
     }
 
     @Override
@@ -71,7 +76,7 @@ public class MongoPlantRepository implements PlantRepository {
             throw new IllegalArgumentException("Can't be null");
         }
         if (!ObjectId.isValid(id)) {
-            return;
+            throw new ResourceNotFoundException("Plant with id " + id + " not found");
         }
         collection.deleteOne(Filters.eq("_id", new ObjectId(id)));
     }

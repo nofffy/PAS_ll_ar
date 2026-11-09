@@ -18,7 +18,9 @@ public class MongoRentMapper {
         ent.setClient(MongoUserMapper.ObjToEnt(rent.getClient()));
         ent.setPlant(MongoPlantMapper.ObjToEnt(rent.getPlant()));
         ent.setRentStart(rent.getRentStart());
-        ent.setRentEnd(rent.getRentEnd());
+        if (rent.getRentEnd() != null) {
+            ent.setRentEnd(rent.getRentEnd());
+        }
         return ent;
     }
 

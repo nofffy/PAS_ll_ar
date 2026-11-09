@@ -66,18 +66,15 @@ public class MemoryRentRepository implements RentRepository {
 
     @Override
     public void removeRent(String id) {
-        if(id == null) {
-            throw new IllegalArgumentException("Can't be null");
-        }
+        if (id == null) throw new IllegalArgumentException("Can't be null");
         Rent rent = rents.get(id);
-        if(rent == null) {
-            throw new ResourceNotFoundException("Rent doesn't exist");
-        }
-        if(rent.getRentEnd() != null) {
-            throw new ResourceConflictException("Can't remove finished rents");
-        }
+        if (rent == null) throw new ResourceNotFoundException("Rent doesn't exist");
+        if (rent.getRentEnd() != null) throw new ResourceConflictException("Can't remove finished rents");
         String plantId = rent.getPlant().getId();
-        activeRentsByPlantId.remove(plantId, rent);
+        boolean wasRemoved = activeRentsByPlantId.remove(plantId, rent);
+        if (!wasRemoved) {
+            throw new ResourceConflictException("Rent state changed concurrently");
+        }
         rents.remove(id);
     }
 

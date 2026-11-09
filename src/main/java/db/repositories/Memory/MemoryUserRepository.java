@@ -1,5 +1,6 @@
 package db.repositories.Memory;
 
+import Exeptions.ResourceNotFoundException;
 import Exeptions.UserLoginAlreadyUsedException;
 import jakarta.enterprise.inject.Typed;
 import model.User;
@@ -70,10 +71,27 @@ public class MemoryUserRepository implements UserRepository {
 
     @Override
     public void updateUser(User user) {
-        if (user == null) {
-            throw new IllegalArgumentException("Can't be null");
+        if (user == null) throw new IllegalArgumentException("Can't be null");
+        User old = users.get(user.getId());
+        if (old == null) {
+            throw new ResourceNotFoundException("User with id " + user.getId() + " does not exist");
+        }
+        if (!old.getLogin().equals(user.getLogin())) {
+            User conflict = usersByLogin.putIfAbsent(user.getLogin(), user);
+            if (conflict != null && !conflict.getId().equals(user.getId())) {
+                throw new UserLoginAlreadyUsedException("User with login " + user.getLogin() + " already exists");
+            }
+            usersByLogin.remove(old.getLogin(), old);
         }
         users.put(user.getId(), user);
+    }
+
+    @Override
+    public void setActive(String id, boolean active) {
+        if (id == null) throw new IllegalArgumentException("Can't be null");
+        User user = users.get(id);
+        if (user == null) throw new ResourceNotFoundException("User with id " + id + " not found");
+        user.setActive(active);
     }
 
     @Override

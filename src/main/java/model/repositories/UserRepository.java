@@ -10,6 +10,7 @@ public interface UserRepository {
     User getUserByLogin(String login);
     List<User> getUsersByLoginPattern(String loginPattern);
     void updateUser(User user);
+    void setActive(String id, boolean active);
     List<User> getUsers();
     List<User> findAllActive();
     List<User> findAllInactive();

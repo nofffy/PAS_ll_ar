@@ -2,9 +2,13 @@ package db.repositories.Mongo;
 
 import Exeptions.ResourceConflictException;
 import Exeptions.ResourceNotFoundException;
+import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.Indexes;
+import com.mongodb.client.model.Updates;
 import db.entities.Mongo.rentEnt;
 import db.mappers.Mongo.MongoRentMapper;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -16,6 +20,7 @@ import model.repositories.RentRepository;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +36,11 @@ public class MongoRentRepository implements RentRepository {
     @Inject
     public MongoRentRepository(MongoDatabase database) {
         this.collection = database.getCollection("rents", rentEnt.class);
+        collection.createIndex(Indexes.ascending("plant._id"),
+                new IndexOptions()
+                        .unique(true)
+                        .partialFilterExpression(Filters.exists("rentEnd", false))
+        );
     }
 
     @Override
@@ -51,18 +61,16 @@ public class MongoRentRepository implements RentRepository {
             throw new IllegalArgumentException("Can't be null");
         }
         String plantId = rent.getPlant().getId();
-        if (plantId != null && ObjectId.isValid(plantId)) {
-            Bson activeFilter = Filters.and(
-                    Filters.eq("plant._id", new ObjectId(plantId)),
-                    Filters.exists("rentEnd", false)
-            );
-            if (collection.find(activeFilter).first() != null) {
+        rentEnt ent = MongoRentMapper.ObjToEnt(rent);
+        try {
+            collection.insertOne(ent);
+            rent.setId(ent.getId().toHexString());
+        } catch (MongoWriteException e) {
+            if (e.getError().getCode() == 11000) {
                 throw new ResourceConflictException("Plant with id " + plantId + " is rented");
             }
+            throw e;
         }
-        rentEnt ent = MongoRentMapper.ObjToEnt(rent);
-        collection.insertOne(ent);
-        rent.setId(ent.getId().toHexString());
     }
 
     @Override
@@ -70,16 +78,20 @@ public class MongoRentRepository implements RentRepository {
         if (id == null) {
             throw new IllegalArgumentException("Can't be null");
         }
-
-        rentEnt ent = collection.find(Filters.eq("_id", new ObjectId(id))).first();
-        if (ent == null) {
+        if (!ObjectId.isValid(id)) {
             throw new ResourceNotFoundException("Rent with id " + id + " not found");
         }
-        if (ent.getRentEnd() != null) {
+        Bson filter = Filters.and(
+                Filters.eq("_id", new ObjectId(id)),
+                Filters.exists("rentEnd", false)
+        );
+        Bson update = Updates.set("rentEnd", LocalDateTime.now());
+        rentEnt updated = collection.findOneAndUpdate(filter, update);
+        if (updated == null) {
+            rentEnt existing = collection.find(Filters.eq("_id", new ObjectId(id))).first();
+            if (existing == null) throw new ResourceNotFoundException("Rent with id " + id + " not found");
             throw new ResourceConflictException("Rent is already finished");
         }
-        ent.endRent();
-        collection.replaceOne(Filters.eq("_id", new ObjectId(id)), ent);
     }
 
     @Override
@@ -87,14 +99,19 @@ public class MongoRentRepository implements RentRepository {
         if (id == null) {
             throw new IllegalArgumentException("Can't be null");
         }
-        rentEnt ent = collection.find(Filters.eq("_id", new ObjectId(id))).first();
-        if (ent == null) {
-            throw new ResourceNotFoundException("Rent doesn't exist");
+        if (!ObjectId.isValid(id)) {
+            throw new ResourceNotFoundException("Rent with id " + id + " not found");
         }
-        if (ent.getRentEnd() != null) {
+        Bson filter = Filters.and(
+                Filters.eq("_id", new ObjectId(id)),
+                Filters.exists("rentEnd", false)
+        );
+        rentEnt deleted = collection.findOneAndDelete(filter);
+        if (deleted == null) {
+            rentEnt existing = collection.find(Filters.eq("_id", new ObjectId(id))).first();
+            if (existing == null) throw new ResourceNotFoundException("Rent doesn't exist");
             throw new ResourceConflictException("Can't remove finished rents");
         }
-        collection.deleteOne(Filters.eq("_id", new ObjectId(id)));
     }
 
     @Override

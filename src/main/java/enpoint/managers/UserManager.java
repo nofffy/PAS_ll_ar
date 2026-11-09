@@ -75,27 +75,13 @@ public class UserManager {
     }
 
     public void activateUser(String id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Id can't be null");
-        }
-        User user = userRepository.getUser(id);
-        if (user == null) {
-            throw new ResourceNotFoundException("User with id " + id + " not found");
-        }
-        user.setActive(true);
-        userRepository.updateUser(user);
+        if (id == null) throw new IllegalArgumentException("Id can't be null");
+        userRepository.setActive(id, true);
     }
 
     public void deactivateUser(String id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Id can't be null");
-        }
-        User user = userRepository.getUser(id);
-        if (user == null) {
-            throw new ResourceNotFoundException("User with id " + id + " not found");
-        }
-        user.setActive(false);
-        userRepository.updateUser(user);
+        if (id == null) throw new IllegalArgumentException("Id can't be null");
+        userRepository.setActive(id, false);
     }
 
     public List<UserResponseDTO> findAllActiveUsers() {
