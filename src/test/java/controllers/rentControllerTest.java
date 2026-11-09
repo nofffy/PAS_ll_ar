@@ -215,4 +215,35 @@ public class rentControllerTest {
                 .then()
                 .statusCode(400);
     }
+
+    @Test
+    public void maxRentsLimitTest() {
+        String clientLogin = uniqueName("max-rents-client");
+        String clientId = createClient(clientLogin, true);
+        int actualMaxRents = given().when()
+                .get("/api/users/" + clientId)
+                .then()
+                .statusCode(200)
+                .extract().path("maxRents");
+
+        for (int i = 0; i < actualMaxRents; i++) {
+            String plantId = createPlant(uniqueName("plant-" + i));
+            createRent(clientId, plantId);
+        }
+
+        String oneTooManyPlantId = createPlant(uniqueName("plant-too-many"));
+        String conflictRentJson = """
+                {
+                    "clientId": "%s",
+                    "plantId": "%s"
+                }
+                """.formatted(clientId, oneTooManyPlantId);
+
+        given().contentType(ContentType.JSON)
+                .body(conflictRentJson)
+                .when()
+                .post("/api/rents")
+                .then()
+                .statusCode(409);
+    }
 }

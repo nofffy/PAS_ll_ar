@@ -52,8 +52,8 @@ public class RentManager {
         }
         List<Rent> activeRents = rentRepository.getCurrentRentsByClientId(userId);
         if (user instanceof Client client) {
-            if (activeRents.size() >= client.MAX_RENTS) {
-                throw new ResourceConflictException("Client has reached max active rents: " + client.MAX_RENTS);
+            if (activeRents.size() >= client.getMaxRents()) {
+                throw new ResourceConflictException("Client has reached max active rents: " + client.getMaxRents());
             }
         }
 
