@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.*;
 
 public class rentControllerTest {
 
@@ -32,7 +31,6 @@ public class rentControllerTest {
                     "type": "CLIENT"
                 }
                 """.formatted(login, active);
-
         Response response = given().contentType(ContentType.JSON)
                 .body(json)
                 .when()
@@ -40,7 +38,6 @@ public class rentControllerTest {
                 .then()
                 .statusCode(201)
                 .extract().response();
-
         return extractId(response);
     }
 
@@ -54,7 +51,6 @@ public class rentControllerTest {
                     "type": "BASIC"
                 }
                 """.formatted(name);
-
         Response response = given().contentType(ContentType.JSON)
                 .body(json)
                 .when()
@@ -62,7 +58,6 @@ public class rentControllerTest {
                 .then()
                 .statusCode(201)
                 .extract().response();
-
         return extractId(response);
     }
 
@@ -73,7 +68,6 @@ public class rentControllerTest {
                     "plantId": "%s"
                 }
                 """.formatted(clientId, plantId);
-
         Response response = given().contentType(ContentType.JSON)
                 .body(json)
                 .when()
@@ -81,31 +75,26 @@ public class rentControllerTest {
                 .then()
                 .statusCode(201)
                 .extract().response();
-
         return extractId(response);
     }
 
-    //TESTY CRD
     @Test
     public void CreateRent() {
         String clientLogin = uniqueName("rent-client");
         String clientId = createClient(clientLogin, true);
         String plantId = createPlant(uniqueName("rent-plant"));
-
         String rentJson = """
                 {
                     "clientId": "%s",
                     "plantId": "%s"
                 }
                 """.formatted(clientId, plantId);
-
         given().contentType(ContentType.JSON)
                 .body(rentJson)
                 .when()
                 .post("/api/rents")
                 .then()
                 .statusCode(201);
-
         given().when()
                 .get("/api/rents")
                 .then()
@@ -120,7 +109,6 @@ public class rentControllerTest {
         String plantName = uniqueName("read-rent-plant");
         String plantId = createPlant(plantName);
         String rentId = createRent(clientId, plantId);
-
         given().when()
                 .get("/api/rents/" + rentId)
                 .then()
@@ -134,35 +122,108 @@ public class rentControllerTest {
         String clientId = createClient(uniqueName("del-rent-client"), true);
         String plantId = createPlant(uniqueName("del-rent-plant"));
         String rentId = createRent(clientId, plantId);
-
         given().when()
                 .delete("/api/rents/" + rentId)
                 .then()
                 .statusCode(204);
-
         given().when()
                 .get("/api/rents/" + rentId)
                 .then()
                 .statusCode(404);
     }
 
-    //TESTY NEGATYWNE
+    @Test
+    public void GetRent_NotFound() {
+        given().when()
+                .get("/api/rents/000000000000000000000000")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void GetRent_InvalidId() {
+        given().when()
+                .get("/api/rents/not-a-valid-object-id")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void DeleteRent_NotFound() {
+        given().when()
+                .delete("/api/rents/000000000000000000000000")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void DeleteRent_InvalidId() {
+        given().when()
+                .delete("/api/rents/not-a-valid-object-id")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void FinishRent_NotFound() {
+        given().when()
+                .post("/api/rents/000000000000000000000000/finish")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void FinishRent_InvalidId() {
+        given().when()
+                .post("/api/rents/not-a-valid-object-id/finish")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void GetCurrentRentsByClientId_UserNotFound() {
+        given().when()
+                .get("/api/rents/client/000000000000000000000000/current")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void GetPastRentsByClientId_UserNotFound() {
+        given().when()
+                .get("/api/rents/client/000000000000000000000000/past")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void GetCurrentRentsByPlantId_PlantNotFound() {
+        given().when()
+                .get("/api/rents/plant/000000000000000000000000/current")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void GetPastRentsByPlantId_PlantNotFound() {
+        given().when()
+                .get("/api/rents/plant/000000000000000000000000/past")
+                .then()
+                .statusCode(404);
+    }
+
     @Test
     public void isAlreadyRentedTest() {
         String clientId = createClient(uniqueName("conflict-client"), true);
         String plantId = createPlant(uniqueName("conflict-plant"));
-
-        // Pierwszy rent — sukces
         createRent(clientId, plantId);
 
-        // Drugi rent tej samej rośliny — konflikt
         String conflictJson = """
                 {
                     "clientId": "%s",
                     "plantId": "%s"
                 }
                 """.formatted(clientId, plantId);
-
         given().contentType(ContentType.JSON)
                 .body(conflictJson)
                 .when()
@@ -176,7 +237,6 @@ public class rentControllerTest {
         String clientId = createClient(uniqueName("inactive-client"), true);
         String plantId = createPlant(uniqueName("inactive-plant"));
 
-        // Deaktywacja klienta
         given().contentType(ContentType.JSON)
                 .post("/api/users/" + clientId + "/deactivate")
                 .then()
@@ -188,7 +248,6 @@ public class rentControllerTest {
                     "plantId": "%s"
                 }
                 """.formatted(clientId, plantId);
-
         given().contentType(ContentType.JSON)
                 .body(rentJson)
                 .when()
@@ -200,20 +259,69 @@ public class rentControllerTest {
     @Test
     public void validationTest() {
         String plantId = createPlant(uniqueName("validation-plant"));
-
         String invalidRentJson = """
                 {
                     "clientId": null,
                     "plantId": "%s"
                 }
                 """.formatted(plantId);
-
         given().contentType(ContentType.JSON)
                 .body(invalidRentJson)
                 .when()
                 .post("/api/rents")
                 .then()
                 .statusCode(400);
+    }
+
+    @Test
+    public void validationTest_PlantIdNull() {
+        String clientId = createClient(uniqueName("validation-client"), true);
+        String invalidRentJson = """
+                {
+                    "clientId": "%s",
+                    "plantId": null
+                }
+                """.formatted(clientId);
+        given().contentType(ContentType.JSON)
+                .body(invalidRentJson)
+                .when()
+                .post("/api/rents")
+                .then()
+                .statusCode(400);
+    }
+
+    @Test
+    public void CreateRent_ClientNotFound() {
+        String plantId = createPlant(uniqueName("no-client-plant"));
+        String rentJson = """
+                {
+                    "clientId": "000000000000000000000000",
+                    "plantId": "%s"
+                }
+                """.formatted(plantId);
+        given().contentType(ContentType.JSON)
+                .body(rentJson)
+                .when()
+                .post("/api/rents")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void CreateRent_PlantNotFound() {
+        String clientId = createClient(uniqueName("no-plant-client"), true);
+        String rentJson = """
+                {
+                    "clientId": "%s",
+                    "plantId": "000000000000000000000000"
+                }
+                """.formatted(clientId);
+        given().contentType(ContentType.JSON)
+                .body(rentJson)
+                .when()
+                .post("/api/rents")
+                .then()
+                .statusCode(404);
     }
 
     @Test
@@ -238,12 +346,141 @@ public class rentControllerTest {
                     "plantId": "%s"
                 }
                 """.formatted(clientId, oneTooManyPlantId);
-
         given().contentType(ContentType.JSON)
                 .body(conflictRentJson)
                 .when()
                 .post("/api/rents")
                 .then()
                 .statusCode(409);
+    }
+
+    @Test
+    public void maxRentsLimitTest_AfterRemove_CanRentAgain() {
+        String clientLogin = uniqueName("max-rents-remove-client");
+        String clientId = createClient(clientLogin, true);
+        int actualMaxRents = given().when()
+                .get("/api/users/" + clientId)
+                .then()
+                .statusCode(200)
+                .extract().path("maxRents");
+
+        String firstRentId = null;
+        for (int i = 0; i < actualMaxRents; i++) {
+            String plantId = createPlant(uniqueName("max-remove-plant-" + i));
+            String rentId = createRent(clientId, plantId);
+            if (i == 0) firstRentId = rentId;
+        }
+
+        given().when()
+                .delete("/api/rents/" + firstRentId)
+                .then()
+                .statusCode(204);
+
+        String newPlantId = createPlant(uniqueName("max-remove-new-plant"));
+        String rentJson = """
+                {
+                    "clientId": "%s",
+                    "plantId": "%s"
+                }
+                """.formatted(clientId, newPlantId);
+        given().contentType(ContentType.JSON)
+                .body(rentJson)
+                .when()
+                .post("/api/rents")
+                .then()
+                .statusCode(201);
+    }
+
+    @Test
+    public void CreateRent_AfterRemove_PlantCanBeRentedAgain() {
+        String clientId1 = createClient(uniqueName("reuse-rm-client-1"), true);
+        String clientId2 = createClient(uniqueName("reuse-rm-client-2"), true);
+        String plantId = createPlant(uniqueName("reuse-rm-plant"));
+
+        String rentId = createRent(clientId1, plantId);
+
+        given().when()
+                .delete("/api/rents/" + rentId)
+                .then()
+                .statusCode(204);
+
+        String rentJson = """
+                {
+                    "clientId": "%s",
+                    "plantId": "%s"
+                }
+                """.formatted(clientId2, plantId);
+        given().contentType(ContentType.JSON)
+                .body(rentJson)
+                .when()
+                .post("/api/rents")
+                .then()
+                .statusCode(201);
+    }
+
+    @Test
+    public void CreateRent_WithCustomRentStart() {
+        String clientId = createClient(uniqueName("custom-start-client"), true);
+        String plantId = createPlant(uniqueName("custom-start-plant"));
+        String rentJson = """
+                {
+                    "clientId": "%s",
+                    "plantId": "%s",
+                    "rentStart": "2024-01-15T10:00:00"
+                }
+                """.formatted(clientId, plantId);
+        given().contentType(ContentType.JSON)
+                .body(rentJson)
+                .when()
+                .post("/api/rents")
+                .then()
+                .statusCode(201);
+
+        given().when()
+                .get("/api/rents")
+                .then()
+                .statusCode(200)
+                .body("rentStart", hasItem(startsWith("2024-01-15")));
+    }
+
+    @Test
+    public void CreateRent_WithoutRentStart_UsesNow() {
+        String clientId = createClient(uniqueName("default-start-client"), true);
+        String plantId = createPlant(uniqueName("default-start-plant"));
+        String rentJson = """
+                {
+                    "clientId": "%s",
+                    "plantId": "%s"
+                }
+                """.formatted(clientId, plantId);
+        Response response = given().contentType(ContentType.JSON)
+                .body(rentJson)
+                .when()
+                .post("/api/rents")
+                .then()
+                .statusCode(201)
+                .extract().response();
+        String rentId = extractId(response);
+
+        given().when()
+                .get("/api/rents/" + rentId)
+                .then()
+                .statusCode(200)
+                .body("rentStart", notNullValue());
+    }
+
+    @Test
+    public void GetRents_ReturnsAllRents() {
+        String clientId = createClient(uniqueName("all-rents-client"), true);
+        String plantId1 = createPlant(uniqueName("all-rents-plant-1"));
+        String plantId2 = createPlant(uniqueName("all-rents-plant-2"));
+        String rentId1 = createRent(clientId, plantId1);
+        String rentId2 = createRent(clientId, plantId2);
+
+        given().when()
+                .get("/api/rents")
+                .then()
+                .statusCode(200)
+                .body("id", hasItems(rentId1, rentId2));
     }
 }

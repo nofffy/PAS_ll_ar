@@ -23,7 +23,7 @@ public class MongoDBManager {
 
     static {
         CodecProvider pojoCodecProvider = PojoCodecProvider.builder().automatic(true).build();
-        CodecRegistry pojoCodecRegistry = fromRegistries(getDefaultCodecRegistry(), fromProviders(pojoCodecProvider, new Jsr310CodecProvider()));
+        CodecRegistry pojoCodecRegistry = fromRegistries(getDefaultCodecRegistry(), fromProviders(pojoCodecProvider));
 
         String uri = "mongodb://admin:adminpassword@mongodb1:27017,mongodb2:27018,mongodb3:27019/?authSource=admin&replicaSet=replica_set_single";
         ConnectionString connectionString = new ConnectionString(uri);

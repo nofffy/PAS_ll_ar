@@ -1,5 +1,6 @@
 package db.repositories.Memory;
 
+import Exeptions.ResourceNotFoundException;
 import jakarta.enterprise.inject.Typed;
 import model.Plant;
 import model.repositories.PlantRepository;
@@ -48,7 +49,10 @@ public class MemoryPlantRepository implements PlantRepository {
         if (id == null) {
             throw new IllegalArgumentException("Can't be null");
         }
-        plants.remove(id);
+        Plant result = plants.remove(id);
+        if (result == null) {
+            throw new ResourceNotFoundException("Plant with id " + id + " not found");
+        }
     }
 
     @Override

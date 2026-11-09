@@ -58,7 +58,7 @@ public class PlantManager {
             throw new IllegalArgumentException("Id can't be null");
         }
         if (!rentRepository.getCurrentRentsByPlantId(id).isEmpty() || !rentRepository.getPastRentsByPlantId(id).isEmpty()) {
-            throw new ResourceConflictException("Can't remove this plant because it has history of rents");
+            throw new ResourceConflictException("Can't remove this plant because it's rented or has history of rents");
         }
         plantRepository.removePlant(id);
     }

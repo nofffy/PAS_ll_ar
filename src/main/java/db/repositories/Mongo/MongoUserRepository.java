@@ -12,6 +12,7 @@ import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
 import db.entities.Mongo.userEnt;
 import db.mappers.Mongo.MongoUserMapper;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Typed;
 import jakarta.inject.Inject;
@@ -35,7 +36,17 @@ public class MongoUserRepository implements UserRepository {
     @Inject
     public MongoUserRepository(MongoDatabase database) {
         this.collection = database.getCollection("users", userEnt.class);
-        collection.createIndex(Indexes.ascending("login"), new IndexOptions().unique(true));
+    }
+
+    @PostConstruct
+    public void initIndexes() {
+        if (collection != null) {
+            try {
+                collection.createIndex(Indexes.ascending("login"), new IndexOptions().unique(true));
+            } catch (Exception e) {
+                System.err.println("Blad: " + e.getMessage());
+            }
+        }
     }
 
     @Override

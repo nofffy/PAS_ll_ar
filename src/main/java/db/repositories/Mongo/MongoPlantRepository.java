@@ -4,6 +4,7 @@ import Exeptions.ResourceNotFoundException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import db.entities.Mongo.plantEnt;
 import db.mappers.Mongo.MongoPlantMapper;
@@ -78,7 +79,10 @@ public class MongoPlantRepository implements PlantRepository {
         if (!ObjectId.isValid(id)) {
             throw new ResourceNotFoundException("Plant with id " + id + " not found");
         }
-        collection.deleteOne(Filters.eq("_id", new ObjectId(id)));
+        DeleteResult result = collection.deleteOne(Filters.eq("_id", new ObjectId(id)));
+        if (result.getDeletedCount() == 0) {
+            throw new ResourceNotFoundException("Plant with id " + id + " not found");
+        }
     }
 
     @Override

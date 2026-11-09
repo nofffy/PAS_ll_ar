@@ -11,10 +11,10 @@ import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Updates;
 import db.entities.Mongo.rentEnt;
 import db.mappers.Mongo.MongoRentMapper;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Typed;
 import jakarta.inject.Inject;
-import jakarta.inject.Named;
 import model.Rent;
 import model.repositories.RentRepository;
 import org.bson.conversions.Bson;
@@ -36,11 +36,21 @@ public class MongoRentRepository implements RentRepository {
     @Inject
     public MongoRentRepository(MongoDatabase database) {
         this.collection = database.getCollection("rents", rentEnt.class);
-        collection.createIndex(Indexes.ascending("plant._id"),
-                new IndexOptions()
-                        .unique(true)
-                        .partialFilterExpression(Filters.exists("rentEnd", false))
-        );
+    }
+
+    @PostConstruct
+    public void initIndexes() {
+        if (collection != null) {
+            try {
+                collection.createIndex(Indexes.ascending("plant._id"),
+                        new IndexOptions()
+                                .unique(true)
+                                .partialFilterExpression(Filters.eq("rentEnd", null))
+                );
+            } catch (Exception e) {
+                System.err.println("Blad: " + e.getMessage());
+            }
+        }
     }
 
     @Override
