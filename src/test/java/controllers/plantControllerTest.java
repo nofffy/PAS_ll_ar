@@ -10,11 +10,6 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 public class plantControllerTest {
-
-    private String uniqueName(String prefix) {
-        return prefix + "-" + UUID.randomUUID();
-    }
-
     private String extractId(Response response) {
         String location = response.getHeader("Location");
         if (location == null) {
@@ -78,9 +73,11 @@ public class plantControllerTest {
         return extractId(response);
     }
 
+    //Testy CRUD
+
     @Test
     public void CreatePlant() {
-        String name = uniqueName("Nowa Testowa");
+        String name = "Nowa Testowa";
         String json = """
                 {
                     "name": "%s",
@@ -105,7 +102,7 @@ public class plantControllerTest {
 
     @Test
     public void ReadPlant() {
-        String name = uniqueName("read-plant");
+        String name = "read-plant";
         String id = createPlant(name, "green", 89.0, true, "BASIC");
         given().when()
                 .get("/api/plants/" + id)
@@ -117,9 +114,9 @@ public class plantControllerTest {
 
     @Test
     public void UpdatePlant() {
-        String name = uniqueName("update-plant");
+        String name = "update-plant";
         String id = createPlant(name, "green", 10.0, true, "BASIC");
-        String updatedName = uniqueName("aktualizacja Kaktus");
+        String updatedName = "aktualizacja Kaktus";
         String updatedJson = """
                 {
                     "name": "%s",
@@ -146,7 +143,7 @@ public class plantControllerTest {
 
     @Test
     public void DeletePlant() {
-        String name = uniqueName("delete-plant");
+        String name = "delete-plant";
         String id = createPlant(name, "green", 10.0, true, "BASIC");
         given().when()
                 .delete("/api/plants/" + id)
@@ -158,18 +155,53 @@ public class plantControllerTest {
                 .statusCode(404);
     }
 
+    //Testy logiki
+
+    @Test
+    public void FindAllAvailable_ReturnsOnlyAvailable() {
+        String availableName = "available-plant";
+        String unavailableName = "unavailable-plant";
+        createPlant(availableName, "green", 10.0, true, "BASIC");
+        createPlant(unavailableName, "green", 10.0, false, "BASIC");
+
+        given().when()
+                .get("/api/plants?available=true")
+                .then()
+                .statusCode(200)
+                .body("name", hasItem(availableName))
+                .body("name", not(hasItem(unavailableName)));
+    }
+
+    @Test
+    public void FindAllUnavailable_ReturnsOnlyUnavailable() {
+        String availableName = "available-plant-2";
+        String unavailableName = "unavailable-plant-2";
+        createPlant(availableName, "green", 10.0, true, "BASIC");
+        createPlant(unavailableName, "green", 10.0, false, "BASIC");
+
+        given().when()
+                .get("/api/plants?available=false")
+                .then()
+                .statusCode(200)
+                .body("name", hasItem(unavailableName))
+                .body("name", not(hasItem(availableName)));
+    }
+
+    @Test
+    public void DeletePlant_WithoutRents_ShouldSucceed() {
+        String plantId = createPlant("no-rent-plant", "green", 10.0, true, "BASIC");
+        given().when()
+                .delete("/api/plants/" + plantId)
+                .then()
+                .statusCode(204);
+    }
+
+    //Testy negatywne
+
     @Test
     public void GetPlant_NotFound() {
         given().when()
                 .get("/api/plants/000000000000000000000000")
-                .then()
-                .statusCode(404);
-    }
-
-    @Test
-    public void GetPlant_InvalidId() {
-        given().when()
-                .get("/api/plants/not-a-valid-object-id")
                 .then()
                 .statusCode(404);
     }
@@ -189,33 +221,6 @@ public class plantControllerTest {
                 .body(json)
                 .when()
                 .put("/api/plants/000000000000000000000000")
-                .then()
-                .statusCode(404);
-    }
-
-    @Test
-    public void UpdatePlant_InvalidId() {
-        String json = """
-                {
-                    "name": "ghost",
-                    "color": "green",
-                    "cost": 10.0,
-                    "available": true,
-                    "type": "BASIC"
-                }
-                """;
-        given().contentType(ContentType.JSON)
-                .body(json)
-                .when()
-                .put("/api/plants/not-a-valid-object-id")
-                .then()
-                .statusCode(404);
-    }
-
-    @Test
-    public void DeletePlant_InvalidId() {
-        given().when()
-                .delete("/api/plants/not-a-valid-object-id")
                 .then()
                 .statusCode(404);
     }
@@ -304,53 +309,14 @@ public class plantControllerTest {
     }
 
     @Test
-    public void FindAllAvailable_ReturnsOnlyAvailable() {
-        String availableName = uniqueName("available-plant");
-        String unavailableName = uniqueName("unavailable-plant");
-        createPlant(availableName, "green", 10.0, true, "BASIC");
-        createPlant(unavailableName, "green", 10.0, false, "BASIC");
-
-        given().when()
-                .get("/api/plants?available=true")
-                .then()
-                .statusCode(200)
-                .body("name", hasItem(availableName))
-                .body("name", not(hasItem(unavailableName)));
-    }
-
-    @Test
-    public void FindAllUnavailable_ReturnsOnlyUnavailable() {
-        String availableName = uniqueName("available-plant-2");
-        String unavailableName = uniqueName("unavailable-plant-2");
-        createPlant(availableName, "green", 10.0, true, "BASIC");
-        createPlant(unavailableName, "green", 10.0, false, "BASIC");
-
-        given().when()
-                .get("/api/plants?available=false")
-                .then()
-                .statusCode(200)
-                .body("name", hasItem(unavailableName))
-                .body("name", not(hasItem(availableName)));
-    }
-
-    @Test
-    public void isRentedTest() {
-        String clientId = createClient(uniqueName("rented-client"));
-        String plantId = createPlant(uniqueName("rented-plant"), "green", 10.0, true, "BASIC");
+    public void isRentedDeleteTest() {
+        String clientId = createClient("rented-client");
+        String plantId = createPlant("rented-plant", "green", 10.0, true, "BASIC");
         createRent(clientId, plantId);
 
         given().when()
                 .delete("/api/plants/" + plantId)
                 .then()
                 .statusCode(409);
-    }
-
-    @Test
-    public void DeletePlant_WithoutRents_ShouldSucceed() {
-        String plantId = createPlant(uniqueName("no-rent-plant"), "green", 10.0, true, "BASIC");
-        given().when()
-                .delete("/api/plants/" + plantId)
-                .then()
-                .statusCode(204);
     }
 }

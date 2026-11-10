@@ -1,13 +1,12 @@
-package enpoint.managers;
+package managers;
 
 import Exeptions.ResourceConflictException;
-import enpoint.DTOmappers.PlantDTOMapper;
+import api.DTOmappers.PlantDTOMapper;
 import Exeptions.ResourceNotFoundException;
-import enpoint.DTOs.CreateUpdatePlantDTO;
-import enpoint.DTOs.PlantResponseDTO;
+import api.DTOs.CreateUpdatePlantDTO;
+import api.DTOs.PlantResponseDTO;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.inject.Named;
 import model.Plant;
 import model.repositories.PlantRepository;
 import model.repositories.RentRepository;

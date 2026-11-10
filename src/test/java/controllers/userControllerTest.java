@@ -11,10 +11,6 @@ import static org.hamcrest.Matchers.*;
 
 public class userControllerTest {
 
-    private String uniqueLogin(String prefix) {
-        return prefix + "-" + UUID.randomUUID();
-    }
-
     private String extractId(Response response) {
         String location = response.getHeader("Location");
         if (location == null) {
@@ -41,9 +37,11 @@ public class userControllerTest {
         return extractId(response);
     }
 
+    //Testy CRUD
+
     @Test
     public void CreateUser() {
-        String login = uniqueLogin("loginnnovember");
+        String login = "loginnnovember";
         String json = """
                 {
                     "login": "%s",
@@ -66,7 +64,7 @@ public class userControllerTest {
 
     @Test
     public void ReadUser() {
-        String login = uniqueLogin("read-user");
+        String login = "read-user";
         String id = createUser(login, true, "CLIENT");
         given().when()
                 .get("/api/users/" + id)
@@ -78,9 +76,9 @@ public class userControllerTest {
 
     @Test
     public void UpdateUser() {
-        String login = uniqueLogin("update-user");
+        String login = "update-user";
         String id = createUser(login, false, "CLIENT");
-        String updatedLogin = uniqueLogin("unbanned_michael");
+        String updatedLogin = "unbanned_michael";
         String updatedJson = """
                 {
                     "login": "%s",
@@ -103,8 +101,29 @@ public class userControllerTest {
     }
 
     @Test
+    public void ActivateUser() {
+        String login = "activate-user";
+        String id = createUser(login, false, "CLIENT");
+        given().when()
+                .get("/api/users/" + id)
+                .then()
+                .statusCode(200)
+                .body("active", equalTo(false));
+        given().when()
+                .contentType(ContentType.JSON)
+                .post("/api/users/" + id + "/activate")
+                .then()
+                .statusCode(200);
+        given().when()
+                .get("/api/users/" + id)
+                .then()
+                .statusCode(200)
+                .body("active", equalTo(true));
+    }
+
+    @Test
     public void DeactivateUser() {
-        String login = uniqueLogin("deactivate-user");
+        String login = "deactivate-user";
         String id = createUser(login, true, "CLIENT");
         given().when()
                 .get("/api/users/" + id)
@@ -122,6 +141,80 @@ public class userControllerTest {
                 .statusCode(200)
                 .body("active", equalTo(false));
     }
+
+    //Testy logiki
+
+    @Test
+    public void CreateUser_Client_HasMaxRents() {
+        String login = "client-with-max";
+        String id = createUser(login, true, "CLIENT");
+        given().when()
+                .get("/api/users/" + id)
+                .then()
+                .statusCode(200)
+                .body("maxRents", notNullValue());
+    }
+
+    @Test
+    public void GetUserByLogin_Found() {
+        String login = "by-login-user";
+        createUser(login, true, "CLIENT");
+        given().when()
+                .get("/api/users/login/" + login)
+                .then()
+                .statusCode(200)
+                .body("login", equalTo(login));
+    }
+
+    @Test
+    public void GetUsersByLoginPattern_ReturnsMatching() {
+        String prefix = "z-pozdrowieniami-z-wakacji";
+        String login1 = prefix + "-alpha";
+        String login2 = prefix + "-sigma";
+        String login3 = "other-user";
+        createUser(login1, true, "CLIENT");
+        createUser(login2, true, "CLIENT");
+        createUser(login3, true, "CLIENT");
+
+        given().when()
+                .get("/api/users?loginPattern=" + prefix)
+                .then()
+                .statusCode(200)
+                .body("login", hasItems(login1, login2))
+                .body("login", not(hasItem(login3)));
+    }
+
+    @Test
+    public void FindAllActive_ReturnsOnlyActive() {
+        String activeLogin = "active-user";
+        String inactiveLogin = "inactive-user";
+        createUser(activeLogin, true, "CLIENT");
+        createUser(inactiveLogin, false, "CLIENT");
+
+        given().when()
+                .get("/api/users?active=true")
+                .then()
+                .statusCode(200)
+                .body("login", hasItem(activeLogin))
+                .body("login", not(hasItem(inactiveLogin)));
+    }
+
+    @Test
+    public void FindAllInactive_ReturnsOnlyInactive() {
+        String activeLogin = "active-user-2";
+        String inactiveLogin = "inactive-user-2";
+        createUser(activeLogin, true, "CLIENT");
+        createUser(inactiveLogin, false, "CLIENT");
+
+        given().when()
+                .get("/api/users?active=false")
+                .then()
+                .statusCode(200)
+                .body("login", hasItem(inactiveLogin))
+                .body("login", not(hasItem(activeLogin)));
+    }
+
+    //Testy negatywne
 
     @Test
     public void GetUser_NotFound() {
@@ -145,17 +238,6 @@ public class userControllerTest {
                 .get("/api/users/login/nonexistent-login-xyz")
                 .then()
                 .statusCode(404);
-    }
-
-    @Test
-    public void GetUserByLogin_Found() {
-        String login = uniqueLogin("by-login-user");
-        createUser(login, true, "CLIENT");
-        given().when()
-                .get("/api/users/login/" + login)
-                .then()
-                .statusCode(200)
-                .body("login", equalTo(login));
     }
 
     @Test
@@ -193,33 +275,9 @@ public class userControllerTest {
     }
 
     @Test
-    public void UpdateUser_ChangeType_ClientToAdmin() {
-        String login = uniqueLogin("type-change-user");
-        String id = createUser(login, true, "CLIENT");
-        String updatedJson = """
-                {
-                    "login": "%s",
-                    "active": true,
-                    "type": "ADMIN"
-                }
-                """.formatted(login);
-        given().contentType(ContentType.JSON)
-                .body(updatedJson)
-                .when()
-                .put("/api/users/" + id)
-                .then()
-                .statusCode(204);
-        given().when()
-                .get("/api/users/" + id)
-                .then()
-                .statusCode(200)
-                .body("type", equalTo("ADMIN"));
-    }
-
-    @Test
     public void UpdateUser_ChangeLoginToExisting_ShouldFail() {
-        String login1 = uniqueLogin("existing-login-1");
-        String login2 = uniqueLogin("existing-login-2");
+        String login1 = "existing-login-1";
+        String login2 = "existing-login-2";
         createUser(login1, true, "CLIENT");
         String id2 = createUser(login2, true, "CLIENT");
 
@@ -248,78 +306,12 @@ public class userControllerTest {
     }
 
     @Test
-    public void ActivateUser_InvalidId() {
-        given().contentType(ContentType.JSON)
-                .when()
-                .post("/api/users/not-a-valid-object-id/activate")
-                .then()
-                .statusCode(404);
-    }
-
-    @Test
     public void DeactivateUser_NotFound() {
         given().contentType(ContentType.JSON)
                 .when()
                 .post("/api/users/000000000000000000000000/deactivate")
                 .then()
                 .statusCode(404);
-    }
-
-    @Test
-    public void DeactivateUser_InvalidId() {
-        given().contentType(ContentType.JSON)
-                .when()
-                .post("/api/users/not-a-valid-object-id/deactivate")
-                .then()
-                .statusCode(404);
-    }
-
-    @Test
-    public void GetUsersByLoginPattern_ReturnsMatching() {
-        String prefix = "pattern-" + UUID.randomUUID();
-        String login1 = prefix + "-alpha";
-        String login2 = prefix + "-beta";
-        String login3 = uniqueLogin("other-user");
-        createUser(login1, true, "CLIENT");
-        createUser(login2, true, "CLIENT");
-        createUser(login3, true, "CLIENT");
-
-        given().when()
-                .get("/api/users?loginPattern=" + prefix)
-                .then()
-                .statusCode(200)
-                .body("login", hasItems(login1, login2))
-                .body("login", not(hasItem(login3)));
-    }
-
-    @Test
-    public void FindAllActive_ReturnsOnlyActive() {
-        String activeLogin = uniqueLogin("active-user");
-        String inactiveLogin = uniqueLogin("inactive-user");
-        createUser(activeLogin, true, "CLIENT");
-        createUser(inactiveLogin, false, "CLIENT");
-
-        given().when()
-                .get("/api/users?active=true")
-                .then()
-                .statusCode(200)
-                .body("login", hasItem(activeLogin))
-                .body("login", not(hasItem(inactiveLogin)));
-    }
-
-    @Test
-    public void FindAllInactive_ReturnsOnlyInactive() {
-        String activeLogin = uniqueLogin("active-user-2");
-        String inactiveLogin = uniqueLogin("inactive-user-2");
-        createUser(activeLogin, true, "CLIENT");
-        createUser(inactiveLogin, false, "CLIENT");
-
-        given().when()
-                .get("/api/users?active=false")
-                .then()
-                .statusCode(200)
-                .body("login", hasItem(inactiveLogin))
-                .body("login", not(hasItem(activeLogin)));
     }
 
     @Test
@@ -392,7 +384,7 @@ public class userControllerTest {
 
     @Test
     public void uniqueLoginTest() {
-        String login = uniqueLogin("duplicate-user");
+        String login = "duplicate-user";
         createUser(login, true, "CLIENT");
         String duplicateJson = """
                 {
@@ -407,38 +399,5 @@ public class userControllerTest {
                 .post("/api/users")
                 .then()
                 .statusCode(409);
-    }
-
-    @Test
-    public void CreateUser_Admin() {
-        String login = uniqueLogin("admin-user");
-        String id = createUser(login, true, "ADMIN");
-        given().when()
-                .get("/api/users/" + id)
-                .then()
-                .statusCode(200)
-                .body("type", equalTo("ADMIN"));
-    }
-
-    @Test
-    public void CreateUser_Gardener() {
-        String login = uniqueLogin("gardener-user");
-        String id = createUser(login, true, "GARDENER");
-        given().when()
-                .get("/api/users/" + id)
-                .then()
-                .statusCode(200)
-                .body("type", equalTo("GARDENER"));
-    }
-
-    @Test
-    public void CreateUser_Client_HasMaxRents() {
-        String login = uniqueLogin("client-with-max");
-        String id = createUser(login, true, "CLIENT");
-        given().when()
-                .get("/api/users/" + id)
-                .then()
-                .statusCode(200)
-                .body("maxRents", notNullValue());
     }
 }

@@ -1,4 +1,4 @@
-package enpoint.DTOs;
+package api.DTOs;
 
 import jakarta.validation.constraints.NotNull;
 

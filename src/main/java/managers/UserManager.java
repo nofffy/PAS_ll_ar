@@ -1,12 +1,11 @@
-package enpoint.managers;
+package managers;
 
 import Exeptions.ResourceNotFoundException;
-import enpoint.DTOmappers.UserDTOMapper;
-import enpoint.DTOs.CreateUpdateUserDTO;
-import enpoint.DTOs.UserResponseDTO;
+import api.DTOmappers.UserDTOMapper;
+import api.DTOs.CreateUpdateUserDTO;
+import api.DTOs.UserResponseDTO;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.inject.Named;
 import model.User;
 import model.repositories.UserRepository;
 

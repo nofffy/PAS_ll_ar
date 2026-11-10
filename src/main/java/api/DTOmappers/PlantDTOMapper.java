@@ -1,7 +1,7 @@
-package enpoint.DTOmappers;
+package api.DTOmappers;
 
-import enpoint.DTOs.CreateUpdatePlantDTO;
-import enpoint.DTOs.PlantResponseDTO;
+import api.DTOs.CreateUpdatePlantDTO;
+import api.DTOs.PlantResponseDTO;
 import model.Plant;
 import model.PlantTypes.Basic;
 import model.PlantTypes.Carnivorous;

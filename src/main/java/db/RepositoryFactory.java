@@ -16,7 +16,7 @@ import model.repositories.UserRepository;
 @ApplicationScoped
 public class RepositoryFactory {
     //mongo lub memory
-    private final String ACTIVE_DB = "memory";
+    private final String ACTIVE_DB = "mongo";
 
     @Inject
     private MongoPlantRepository mongoPlantRepo;

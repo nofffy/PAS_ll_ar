@@ -1,4 +1,4 @@
-package enpoint.DTOs;
+package api.DTOs;
 
 public class PlantResponseDTO {
     private String id;

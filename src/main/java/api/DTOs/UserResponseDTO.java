@@ -1,4 +1,4 @@
-package enpoint.DTOs;
+package api.DTOs;
 
 public class UserResponseDTO {
     private String id;

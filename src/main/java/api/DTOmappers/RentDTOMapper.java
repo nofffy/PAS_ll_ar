@@ -1,6 +1,6 @@
-package enpoint.DTOmappers;
+package api.DTOmappers;
 
-import enpoint.DTOs.RentResponseDTO;
+import api.DTOs.RentResponseDTO;
 import model.Rent;
 
 public class RentDTOMapper {

@@ -1,4 +1,4 @@
-package enpoint.controllers;
+package api.controllers;
 
 
 import jakarta.ws.rs.ApplicationPath;

@@ -1,7 +1,7 @@
-package enpoint.controllers;
+package api.controllers;
 
-import enpoint.DTOs.CreateUpdateRentDTO;
-import enpoint.DTOs.RentResponseDTO;
+import api.DTOs.CreateUpdateRentDTO;
+import api.DTOs.RentResponseDTO;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -9,7 +9,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import enpoint.managers.RentManager;
+import managers.RentManager;
 import jakarta.ws.rs.core.UriInfo;
 
 import java.net.URI;

@@ -1,7 +1,7 @@
-package enpoint.DTOmappers;
+package api.DTOmappers;
 
-import enpoint.DTOs.CreateUpdateUserDTO;
-import enpoint.DTOs.UserResponseDTO;
+import api.DTOs.CreateUpdateUserDTO;
+import api.DTOs.UserResponseDTO;
 import model.User;
 import model.UserTypes.Admin;
 import model.UserTypes.Client;

@@ -1,9 +1,9 @@
-package enpoint.controllers;
+package api.controllers;
 
-import enpoint.DTOs.CreateUpdateUserDTO;
-import enpoint.DTOs.UserResponseDTO;
+import api.DTOs.CreateUpdateUserDTO;
+import api.DTOs.UserResponseDTO;
 import jakarta.validation.Valid;
-import enpoint.managers.UserManager;
+import managers.UserManager;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
