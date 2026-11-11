@@ -12,29 +12,24 @@ public class PlantDTOMapper {
     public static Plant DTOToModel(CreateUpdatePlantDTO plantDTO) {
         Plant newPlant;
 
-        boolean isAvailable = true;
-        if (plantDTO.isAvailable() != null) {
-            isAvailable = plantDTO.isAvailable();
-        }
-
         String type = plantDTO.getType();
         if (type.equals("BASIC")) {
-            newPlant = new Basic(plantDTO.getName(), plantDTO.getColor(), plantDTO.getCost(), isAvailable);
+            newPlant = new Basic(plantDTO.getName(), plantDTO.getColor(), plantDTO.getCost());
         } else if (type.equals("CARNIVOROUS")) {
             if (plantDTO.getFavouriteFood() == null) {
                 throw new IllegalArgumentException("Unknown favourite food info");
             }
-            newPlant = new Carnivorous(plantDTO.getName(), plantDTO.getColor(), plantDTO.getCost(), isAvailable, plantDTO.getFavouriteFood());
+            newPlant = new Carnivorous(plantDTO.getName(), plantDTO.getColor(), plantDTO.getCost(), plantDTO.getFavouriteFood());
         } else if (type.equals("MONSTERA")) {
             if (plantDTO.getLeafSize() == null) {
                 throw new IllegalArgumentException("Unknown leaf size");
             }
-            newPlant = new Monstera(plantDTO.getName(), plantDTO.getColor(), plantDTO.getCost(), isAvailable, plantDTO.getLeafSize());
+            newPlant = new Monstera(plantDTO.getName(), plantDTO.getColor(), plantDTO.getCost(), plantDTO.getLeafSize());
         } else if (type.equals("SUCCULENT")) {
             if (plantDTO.isSpiky() == null) {
                 throw new IllegalArgumentException("Unknown spiky info");
             }
-            newPlant = new Succulent(plantDTO.getName(), plantDTO.getColor(), plantDTO.getCost(), isAvailable, plantDTO.isSpiky());
+            newPlant = new Succulent(plantDTO.getName(), plantDTO.getColor(), plantDTO.getCost(), plantDTO.isSpiky());
         } else {
             throw new IllegalArgumentException("Unknown plant type");
         }
@@ -47,7 +42,6 @@ public class PlantDTOMapper {
         dto.setName(plant.getName());
         dto.setColor(plant.getColor());
         dto.setCost(plant.getCost());
-        dto.setAvailable(plant.isAvailable());
 
         if (plant instanceof Basic) {
             dto.setType("BASIC");

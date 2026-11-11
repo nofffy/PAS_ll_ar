@@ -67,16 +67,4 @@ public class PlantManager {
             .map(PlantDTOMapper::ModelToDTO)
             .toList();
     }
-
-    public List<PlantResponseDTO> findAllAvailable() {
-        return plantRepository.findAllAvailable().stream()
-                .map(PlantDTOMapper::ModelToDTO)
-                .toList();
-    }
-
-    public List<PlantResponseDTO> findAllUnavailable() {
-        return plantRepository.findAllUnavailable().stream()
-                .map(PlantDTOMapper::ModelToDTO)
-                .toList();
-    }
 }

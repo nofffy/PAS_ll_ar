@@ -5,8 +5,8 @@ import model.Plant;
 public class Succulent extends Plant {
     private boolean spiky;
 
-    public Succulent(String name, String color, double cost, boolean available, boolean spiky) {
-        super(name, color, cost, available);
+    public Succulent(String name, String color, double cost, boolean spiky) {
+        super(name, color, cost);
         this.spiky = spiky;
     }
 

@@ -5,8 +5,8 @@ import model.Plant;
 public class Carnivorous extends Plant {
     private String favouriteFood;
 
-    public Carnivorous(String name, String color, double cost, boolean available, String favouriteFood) {
-        super(name, color, cost, available);
+    public Carnivorous(String name, String color, double cost, String favouriteFood) {
+        super(name, color, cost);
         this.favouriteFood = favouriteFood;
     }
 

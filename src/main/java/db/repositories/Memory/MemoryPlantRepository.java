@@ -57,18 +57,4 @@ public class MemoryPlantRepository implements PlantRepository {
 
     @Override
     public List<Plant> getPlants() { return new ArrayList<>(plants.values()); }
-
-    @Override
-    public List<Plant> findAllAvailable() {
-        return plants.values().stream()
-                .filter(Plant::isAvailable)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Plant> findAllUnavailable() {
-        return plants.values().stream()
-                .filter(plant -> !plant.isAvailable())
-                .collect(Collectors.toList());
-    }
 }

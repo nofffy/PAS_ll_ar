@@ -40,11 +40,11 @@ public class DataInitializer {
         userRepository.addUser(inactiveClient);
         userRepository.addUser(clientRent);
 
-        Plant carnivorous = new Carnivorous("se_jem_muchypozdrawiam", "zielony", 89.0, true, "muchy");
-        Plant monstera = new Monstera("monsterek-mega-unikat", "green", 22.2, true, 10);
-        Plant kaktus = new Succulent("Kaktus Meksykańska masakra", "purple", 20.0, true, true);
-        Plant plant4 = new Monstera("do testu usuniecia-test123", "red", 10.0, true, 5);
-        Plant plantRent = new Monstera("halotomaszroslinatwoja", "red", 10.0, true, 5);
+        Plant carnivorous = new Carnivorous("se_jem_muchypozdrawiam", "zielony", 89.0, "muchy");
+        Plant monstera = new Monstera("monsterek-mega-unikat", "green", 22.2, 10);
+        Plant kaktus = new Succulent("Kaktus Meksykańska masakra", "purple", 20.0, true);
+        Plant plant4 = new Monstera("do testu usuniecia-test123", "red", 10.0, 5);
+        Plant plantRent = new Monstera("halotomaszroslinatwoja", "red", 10.0, 5);
 
         plantRepository.addPlant(carnivorous);
         plantRepository.addPlant(monstera);

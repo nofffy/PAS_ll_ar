@@ -90,18 +90,4 @@ public class MongoPlantRepository implements PlantRepository {
         return collection.find().into(new ArrayList<>()).stream()
                 .map(MongoPlantMapper::EntToObj).toList();
     }
-
-    @Override
-    public List<Plant> findAllAvailable() {
-        Bson filter = Filters.eq("available", true);
-        return collection.find(filter).into(new ArrayList<>()).stream()
-                .map(MongoPlantMapper::EntToObj).toList();
-    }
-
-    @Override
-    public List<Plant> findAllUnavailable() {
-        Bson filter = Filters.eq("available", false);
-        return collection.find(filter).into(new ArrayList<>()).stream()
-                .map(MongoPlantMapper::EntToObj).toList();
-    }
 }

@@ -5,8 +5,8 @@ import model.Plant;
 public class Monstera extends Plant {
     private int leafSize;
 
-    public Monstera(String name, String color, double cost, boolean available, int leafSize) {
-        super(name, color, cost, available);
+    public Monstera(String name, String color, double cost, int leafSize) {
+        super(name, color, cost);
         this.leafSize = leafSize;
     }
 

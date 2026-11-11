@@ -9,7 +9,6 @@ public class plantEnt {
     private String name;
     private String color;
     private double cost;
-    private boolean available;
 
     private String plantType;
     private String favouriteFood;
@@ -48,14 +47,6 @@ public class plantEnt {
 
     public void setCost(double cost) {
         this.cost = cost;
-    }
-
-    public boolean isAvailable() {
-        return available;
-    }
-
-    public void setAvailable(boolean available) {
-        this.available = available;
     }
 
     public String getPlantType() {

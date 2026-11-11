@@ -28,18 +28,8 @@ public class PlantController {
     private UriInfo uriInfo;
 
     @GET
-    public Response getPlants(@QueryParam("available") Boolean isAvailable) {
-        List<PlantResponseDTO> plants;
-        if (isAvailable != null) {
-            if (isAvailable) {
-                plants = plantManager.findAllAvailable();
-            } else {
-                plants = plantManager.findAllUnavailable();
-            }
-        } else {
-            plants = plantManager.getPlants();
-        }
-        return Response.ok(plants).build();
+    public Response getPlants() {
+        return Response.ok(plantManager.getPlants()).build();
     }
 
     @GET

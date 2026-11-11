@@ -21,7 +21,6 @@ public class MongoPlantMapper {
         ent.setName(plant.getName());
         ent.setColor(plant.getColor());
         ent.setCost(plant.getCost());
-        ent.setAvailable(plant.isAvailable());
 
         if (plant instanceof Basic) {
             ent.setPlantType("BASIC");
@@ -46,13 +45,13 @@ public class MongoPlantMapper {
 
         String type = ent.getPlantType();
         if (type.equals("BASIC")) {
-            plant = new Basic(ent.getName(), ent.getColor(), ent.getCost(), ent.isAvailable());
+            plant = new Basic(ent.getName(), ent.getColor(), ent.getCost());
         } else if (type.equals("CARNIVOROUS")) {
-            plant = new Carnivorous(ent.getName(), ent.getColor(), ent.getCost(), ent.isAvailable(), ent.getFavouriteFood());
+            plant = new Carnivorous(ent.getName(), ent.getColor(), ent.getCost(), ent.getFavouriteFood());
         } else if (type.equals("MONSTERA")) {
-            plant = new Monstera(ent.getName(), ent.getColor(), ent.getCost(), ent.isAvailable(), ent.getLeafSize());
+            plant = new Monstera(ent.getName(), ent.getColor(), ent.getCost(), ent.getLeafSize());
         } else if (type.equals("SUCCULENT")) {
-            plant = new Succulent(ent.getName(), ent.getColor(), ent.getCost(), ent.isAvailable(), ent.getSpiky());
+            plant = new Succulent(ent.getName(), ent.getColor(), ent.getCost(), ent.getSpiky());
         } else {
             throw new IllegalStateException("Unknown plant type: " + type);
         }

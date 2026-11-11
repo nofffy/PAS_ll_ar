@@ -16,8 +16,6 @@ public class CreateUpdatePlantDTO {
     @Positive(message = "Cost must be greater than 0")
     private Double cost;
 
-    private Boolean available;
-
     @NotBlank(message = "Plant type is required")
     @Pattern(regexp = "^(BASIC|CARNIVOROUS|MONSTERA|SUCCULENT)$", message = "Plant type has to be one of: BASIC, CARNIVOROUS, MONSTERA, SUCCULENT")
     private String type;
@@ -48,14 +46,6 @@ public class CreateUpdatePlantDTO {
 
     public void setCost(Double cost) {
         this.cost = cost;
-    }
-
-    public Boolean isAvailable() {
-        return available;
-    }
-
-    public void setAvailable(Boolean available) {
-        this.available = available;
     }
 
     public String getType() {

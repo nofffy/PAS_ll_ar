@@ -3,8 +3,8 @@ package model.PlantTypes;
 import model.Plant;
 
 public class Basic extends Plant {
-    public Basic(String name, String color, double cost, boolean available) {
-        super(name, color, cost, available);
+    public Basic(String name, String color, double cost) {
+        super(name, color, cost);
     }
 
     @Override

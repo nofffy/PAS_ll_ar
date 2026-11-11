@@ -5,14 +5,12 @@ public abstract class Plant {
     private String name;
     private String color;
     private double cost;
-    private boolean available;
 
-    public Plant(String name, String color, double cost, boolean available) {
+    public Plant(String name, String color, double cost) {
         this.id = null;
         this.name = name;
         this.color = color;
         this.cost = cost;
-        this.available = available;
     }
 
     public abstract double getUniqueValue();
@@ -39,12 +37,6 @@ public abstract class Plant {
 
     public void setCost(double cost) {
         this.cost = cost;
-    }
-
-    public boolean isAvailable() { return available; }
-
-    public void setAvailable(boolean available) {
-        this.available = available;
     }
 
     public String getId() { return id; }

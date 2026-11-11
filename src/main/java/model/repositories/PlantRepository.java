@@ -11,6 +11,4 @@ public interface PlantRepository {
     void removePlant(String id);
 
     List<Plant> getPlants();
-    List<Plant> findAllAvailable();
-    List<Plant> findAllUnavailable();
 }

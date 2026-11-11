@@ -5,7 +5,6 @@ public class PlantResponseDTO {
     private String name;
     private String color;
     private Double cost;
-    private Boolean available;
     private String type;
 
     private String favouriteFood;
@@ -42,14 +41,6 @@ public class PlantResponseDTO {
 
     public void setCost(Double cost) {
         this.cost = cost;
-    }
-
-    public Boolean getAvailable() {
-        return available;
-    }
-
-    public void setAvailable(Boolean available) {
-        this.available = available;
     }
 
     public String getType() {

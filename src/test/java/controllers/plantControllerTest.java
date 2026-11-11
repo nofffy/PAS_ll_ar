@@ -158,36 +158,6 @@ public class plantControllerTest {
     //Testy logiki
 
     @Test
-    public void FindAllAvailable_ReturnsOnlyAvailable() {
-        String availableName = "available-plant";
-        String unavailableName = "unavailable-plant";
-        createPlant(availableName, "green", 10.0, true, "BASIC");
-        createPlant(unavailableName, "green", 10.0, false, "BASIC");
-
-        given().when()
-                .get("/api/plants?available=true")
-                .then()
-                .statusCode(200)
-                .body("name", hasItem(availableName))
-                .body("name", not(hasItem(unavailableName)));
-    }
-
-    @Test
-    public void FindAllUnavailable_ReturnsOnlyUnavailable() {
-        String availableName = "available-plant-2";
-        String unavailableName = "unavailable-plant-2";
-        createPlant(availableName, "green", 10.0, true, "BASIC");
-        createPlant(unavailableName, "green", 10.0, false, "BASIC");
-
-        given().when()
-                .get("/api/plants?available=false")
-                .then()
-                .statusCode(200)
-                .body("name", hasItem(unavailableName))
-                .body("name", not(hasItem(availableName)));
-    }
-
-    @Test
     public void DeletePlant_WithoutRents_ShouldSucceed() {
         String plantId = createPlant("no-rent-plant", "green", 10.0, true, "BASIC");
         given().when()
