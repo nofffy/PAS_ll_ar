@@ -3,7 +3,9 @@ package db.repositories.Memory;
 import Exeptions.ResourceConflictException;
 import Exeptions.ResourceNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.Typed;
+import jakarta.inject.Inject;
 import model.Rent;
 import model.repositories.RentRepository;
 
@@ -19,8 +21,21 @@ import java.util.stream.Collectors;
 public class MemoryRentRepository implements RentRepository {
     private final Map<String, Rent> rents = new ConcurrentHashMap<>();
     private final Map<String, Rent> activeRentsByPlantId = new ConcurrentHashMap<>();
+    private final Map<String, Rent> allRentsByPlantId = new ConcurrentHashMap<>();
 
-    public MemoryRentRepository() {}
+    private final PlantLockManager plantLockManager;
+    private final Instance<MemoryPlantRepository> plantRepository;
+
+    @Inject
+    public MemoryRentRepository(PlantLockManager plantLockManager, Instance<MemoryPlantRepository> plantRepository) {
+        this.plantLockManager = plantLockManager;
+        this.plantRepository = plantRepository;
+    }
+
+    public MemoryRentRepository() {
+        this.plantLockManager = null;
+        this.plantRepository = null;
+    }
 
     @Override
     public Rent getRent(String id) {
@@ -36,13 +51,24 @@ public class MemoryRentRepository implements RentRepository {
             throw new IllegalArgumentException("Can't be null");
         }
         String plantId = rent.getPlant().getId();
-        Rent existingRent = activeRentsByPlantId.putIfAbsent(plantId, rent);
-        if(existingRent != null) {
-            throw new ResourceConflictException("Plant with id " + plantId + " is rented");
+        Object lock = plantLockManager.getLock(plantId);
+
+        synchronized (lock) {
+            MemoryPlantRepository pRepository = plantRepository.get();
+
+            if (!pRepository.plantExists(plantId)) {
+                throw new ResourceNotFoundException("Plant not found");
+            }
+            Rent existingRent = activeRentsByPlantId.putIfAbsent(plantId, rent);
+            if(existingRent != null) {
+                throw new ResourceConflictException("Plant with id " + plantId + " is rented");
+            }
+            Rent allRent = allRentsByPlantId.putIfAbsent(plantId, rent);
+            String newId = UUID.randomUUID().toString();
+            rent.setId(newId);
+            rents.put(newId, rent);
         }
-        String newId = UUID.randomUUID().toString();
-        rent.setId(newId);
-        rents.put(newId, rent);
+
     }
 
     @Override
@@ -122,4 +148,9 @@ public class MemoryRentRepository implements RentRepository {
 
     @Override
     public List<Rent> getRents() { return new ArrayList<>(rents.values()); }
+
+    public boolean hasAnyRent(String plantId) {
+        return allRentsByPlantId.containsKey(plantId);
+    }
+
 }

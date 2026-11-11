@@ -1,5 +1,6 @@
 package db.repositories.Mongo;
 
+import Exeptions.ResourceConflictException;
 import Exeptions.ResourceNotFoundException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -7,7 +8,9 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import db.entities.Mongo.plantEnt;
+import db.entities.Mongo.rentEnt;
 import db.mappers.Mongo.MongoPlantMapper;
+import db.mappers.Mongo.MongoRentMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Typed;
 import jakarta.inject.Inject;
@@ -24,14 +27,17 @@ import java.util.List;
 @Typed(MongoPlantRepository.class)
 public class MongoPlantRepository implements PlantRepository {
     private final MongoCollection<plantEnt> collection;
+    private final MongoCollection<rentEnt> rentCollection;
 
     public MongoPlantRepository() {
         this.collection = null;
+        this.rentCollection = null;
     }
 
     @Inject
     public MongoPlantRepository(MongoDatabase database) {
         this.collection = database.getCollection("plants", plantEnt.class);
+        this.rentCollection = database.getCollection("rents", rentEnt.class);
     }
 
     @Override
@@ -78,6 +84,9 @@ public class MongoPlantRepository implements PlantRepository {
         }
         if (!ObjectId.isValid(id)) {
             throw new ResourceNotFoundException("Plant with id " + id + " not found");
+        }
+        if (rentCollection.find(Filters.eq("plant._id", new ObjectId(id))).first() != null ) {
+            throw new ResourceConflictException("Can't remove plant " + id + " because it's rented or has history of rents");
         }
         DeleteResult result = collection.deleteOne(Filters.eq("_id", new ObjectId(id)));
         if (result.getDeletedCount() == 0) {
