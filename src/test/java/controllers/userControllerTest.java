@@ -1,15 +1,25 @@
 package controllers;
 
+import com.mongodb.client.MongoDatabase;
+import db.MongoDBManager;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.bson.Document;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
-
-import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 public class userControllerTest {
+    @AfterAll
+    public static void cleanUp() {
+        MongoDatabase db = MongoDBManager.getDatabase();
+
+        db.getCollection("users").deleteMany(new Document());
+        db.getCollection("plants").deleteMany(new Document());
+        db.getCollection("rents").deleteMany(new Document());
+    }
 
     private String extractId(Response response) {
         String location = response.getHeader("Location");

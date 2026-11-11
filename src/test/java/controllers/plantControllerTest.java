@@ -1,15 +1,26 @@
 package controllers;
 
+import com.mongodb.client.MongoDatabase;
+import db.MongoDBManager;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.bson.Document;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
-
-import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 public class plantControllerTest {
+    @AfterAll
+    public static void cleanUp() {
+        MongoDatabase db = MongoDBManager.getDatabase();
+
+        db.getCollection("users").deleteMany(new Document());
+        db.getCollection("plants").deleteMany(new Document());
+        db.getCollection("rents").deleteMany(new Document());
+    }
+
     private String extractId(Response response) {
         String location = response.getHeader("Location");
         if (location == null) {
@@ -18,16 +29,15 @@ public class plantControllerTest {
         return location.substring(location.lastIndexOf('/') + 1);
     }
 
-    private String createPlant(String name, String color, double cost, boolean available, String type) {
+    private String createPlant(String name, String color, double cost, String type) {
         String json = """
                 {
                     "name": "%s",
                     "color": "%s",
                     "cost": %s,
-                    "available": %s,
                     "type": "%s"
                 }
-                """.formatted(name, color, cost, available, type);
+                """.formatted(name, color, cost, type);
         Response response = given().contentType(ContentType.JSON)
                 .body(json)
                 .when()
@@ -83,7 +93,6 @@ public class plantControllerTest {
                     "name": "%s",
                     "color": "yellow",
                     "cost": 45.5,
-                    "available": true,
                     "type": "BASIC"
                 }
                 """.formatted(name);
@@ -103,7 +112,7 @@ public class plantControllerTest {
     @Test
     public void ReadPlant() {
         String name = "read-plant";
-        String id = createPlant(name, "green", 89.0, true, "BASIC");
+        String id = createPlant(name, "green", 89.0, "BASIC");
         given().when()
                 .get("/api/plants/" + id)
                 .then()
@@ -115,14 +124,13 @@ public class plantControllerTest {
     @Test
     public void UpdatePlant() {
         String name = "update-plant";
-        String id = createPlant(name, "green", 10.0, true, "BASIC");
+        String id = createPlant(name, "green", 10.0, "BASIC");
         String updatedName = "aktualizacja Kaktus";
         String updatedJson = """
                 {
                     "name": "%s",
                     "color": "pink",
                     "cost": 25.0,
-                    "available": true,
                     "type": "SUCCULENT",
                     "spiky": true
                 }
@@ -144,7 +152,7 @@ public class plantControllerTest {
     @Test
     public void DeletePlant() {
         String name = "delete-plant";
-        String id = createPlant(name, "green", 10.0, true, "BASIC");
+        String id = createPlant(name, "green", 10.0, "BASIC");
         given().when()
                 .delete("/api/plants/" + id)
                 .then()
@@ -159,7 +167,7 @@ public class plantControllerTest {
 
     @Test
     public void DeletePlant_WithoutRents_ShouldSucceed() {
-        String plantId = createPlant("no-rent-plant", "green", 10.0, true, "BASIC");
+        String plantId = createPlant("no-rent-plant", "green", 10.0, "BASIC");
         given().when()
                 .delete("/api/plants/" + plantId)
                 .then()
@@ -183,7 +191,6 @@ public class plantControllerTest {
                     "name": "ghost",
                     "color": "green",
                     "cost": 10.0,
-                    "available": true,
                     "type": "BASIC"
                 }
                 """;
@@ -210,7 +217,6 @@ public class plantControllerTest {
                     "name": "zbanowany michal",
                     "color": "black",
                     "cost": -50.0,
-                    "available": true,
                     "type": "BASIC"
                 }
                 """;
@@ -228,7 +234,6 @@ public class plantControllerTest {
                 {
                     "name": "zbanowany michalnumer2",
                     "cost": 50.0,
-                    "available": true,
                     "type": "BASIC"
                 }
                 """;
@@ -247,7 +252,6 @@ public class plantControllerTest {
                     "name": "invalid-type-plant",
                     "color": "green",
                     "cost": 10.0,
-                    "available": true,
                     "type": "UNKNOWN_TYPE"
                 }
                 """;
@@ -266,7 +270,6 @@ public class plantControllerTest {
                     "name": "",
                     "color": "green",
                     "cost": 10.0,
-                    "available": true,
                     "type": "BASIC"
                 }
                 """;
@@ -281,7 +284,7 @@ public class plantControllerTest {
     @Test
     public void isRentedDeleteTest() {
         String clientId = createClient("rented-client");
-        String plantId = createPlant("rented-plant", "green", 10.0, true, "BASIC");
+        String plantId = createPlant("rented-plant", "green", 10.0, "BASIC");
         createRent(clientId, plantId);
 
         given().when()
