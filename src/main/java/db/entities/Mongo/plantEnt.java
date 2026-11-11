@@ -9,6 +9,7 @@ public class plantEnt {
     private String name;
     private String color;
     private double cost;
+    private boolean hasRentHistory;
 
     private String plantType;
     private String favouriteFood;
@@ -80,4 +81,8 @@ public class plantEnt {
     public void setSpiky(Boolean spiky) {
         this.spiky = spiky;
     }
+
+    public boolean isHasRentHistory() { return hasRentHistory; }
+
+    public void setHasRentHistory(boolean hasRentHistory) { this.hasRentHistory = hasRentHistory; }
 }

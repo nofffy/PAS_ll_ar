@@ -9,6 +9,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Updates;
+import db.entities.Mongo.plantEnt;
 import db.entities.Mongo.rentEnt;
 import db.mappers.Mongo.MongoRentMapper;
 import jakarta.annotation.PostConstruct;
@@ -28,14 +29,17 @@ import java.util.List;
 @Typed(MongoRentRepository.class)
 public class MongoRentRepository implements RentRepository {
     private final MongoCollection<rentEnt> collection;
+    private final MongoCollection<plantEnt> plantCollection;
 
     public MongoRentRepository() {
         this.collection = null;
+        this.plantCollection = null;
     }
 
     @Inject
     public MongoRentRepository(MongoDatabase database) {
         this.collection = database.getCollection("rents", rentEnt.class);
+        this.plantCollection = database.getCollection("plants", plantEnt.class);
     }
 
     @PostConstruct
@@ -71,6 +75,12 @@ public class MongoRentRepository implements RentRepository {
             throw new IllegalArgumentException("Can't be null");
         }
         String plantId = rent.getPlant().getId();
+
+        plantCollection.updateOne(
+                Filters.eq("_id", new ObjectId(plantId)),
+                Updates.set("hasRentHistory", true)
+        );
+
         rentEnt ent = MongoRentMapper.ObjToEnt(rent);
         try {
             collection.insertOne(ent);

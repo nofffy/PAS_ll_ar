@@ -59,6 +59,9 @@ public class MongoPlantRepository implements PlantRepository {
             return null;
         }
         plantEnt ent = collection.find(Filters.eq("_id", new ObjectId(id))).first();
+        if (ent == null) {
+            throw new ResourceNotFoundException("Plant with id " + id + " not found");
+        }
         return MongoPlantMapper.EntToObj(ent);
     }
 
@@ -70,11 +73,16 @@ public class MongoPlantRepository implements PlantRepository {
         if (!ObjectId.isValid(plant.getId())) {
             throw new ResourceNotFoundException("Plant with id " + plant.getId() + " not found");
         }
-        plantEnt ent = MongoPlantMapper.ObjToEnt(plant);
-        UpdateResult result = collection.replaceOne(Filters.eq("_id", new ObjectId(plant.getId())), ent);
-        if (result.getMatchedCount() == 0) {
-            throw new ResourceNotFoundException("Plant with id " + plant.getId() + " not found");
+
+        ObjectId plantId = new ObjectId(plant.getId());
+
+        plantEnt existingEnt = collection.find(Filters.eq("_id", plantId)).first();
+        if (existingEnt == null) {
+            throw new ResourceNotFoundException("Plant with id " + plantId + " not found");
         }
+        plantEnt newEnt = MongoPlantMapper.ObjToEnt(plant);
+        newEnt.setHasRentHistory(existingEnt.isHasRentHistory());
+        collection.replaceOne(Filters.eq("_id", plantId), newEnt);
     }
 
     @Override
@@ -85,12 +93,21 @@ public class MongoPlantRepository implements PlantRepository {
         if (!ObjectId.isValid(id)) {
             throw new ResourceNotFoundException("Plant with id " + id + " not found");
         }
-        if (rentCollection.find(Filters.eq("plant._id", new ObjectId(id))).first() != null ) {
-            throw new ResourceConflictException("Can't remove plant " + id + " because it's rented or has history of rents");
-        }
-        DeleteResult result = collection.deleteOne(Filters.eq("_id", new ObjectId(id)));
+        DeleteResult result = collection.deleteOne(
+                Filters.and(
+                        Filters.eq("_id", new ObjectId(id)),
+                        Filters.eq("hasRentHistory",  false)
+                )
+        );
         if (result.getDeletedCount() == 0) {
-            throw new ResourceNotFoundException("Plant with id " + id + " not found");
+            boolean exists = collection.find(Filters.eq("_id", new ObjectId(id))).first() != null;
+            if (!exists) {
+                System.out.println("No plantEnt with id " + id + " found");
+                throw new ResourceNotFoundException("Plant with id " + id + " not found");
+            } else {
+                System.out.println("No plantEnt with id " + id + " has rentHistroy");
+                throw new ResourceConflictException("Plant with id " + id + " has rent history");
+            }
         }
     }
 
