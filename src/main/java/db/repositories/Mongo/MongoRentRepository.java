@@ -9,6 +9,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.UpdateResult;
 import db.entities.Mongo.plantEnt;
 import db.entities.Mongo.rentEnt;
 import db.mappers.Mongo.MongoRentMapper;
@@ -76,10 +77,14 @@ public class MongoRentRepository implements RentRepository {
         }
         String plantId = rent.getPlant().getId();
 
-        plantCollection.updateOne(
+        UpdateResult plantUpdate = plantCollection.updateOne(
                 Filters.eq("_id", new ObjectId(plantId)),
                 Updates.set("hasRentHistory", true)
         );
+
+        if (plantUpdate.getMatchedCount() == 0) {
+            throw new ResourceNotFoundException("Plant with id " + plantId + " not found");
+        }
 
         rentEnt ent = MongoRentMapper.ObjToEnt(rent);
         try {

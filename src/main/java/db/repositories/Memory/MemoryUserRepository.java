@@ -70,7 +70,7 @@ public class MemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public void updateUser(User user) {
+    public synchronized void updateUser(User user) {
         if (user == null) throw new IllegalArgumentException("Can't be null");
         User old = users.get(user.getId());
         if (old == null) {

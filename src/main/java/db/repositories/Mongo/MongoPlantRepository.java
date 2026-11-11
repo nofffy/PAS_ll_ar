@@ -5,6 +5,7 @@ import Exeptions.ResourceNotFoundException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import db.entities.Mongo.plantEnt;
@@ -75,14 +76,24 @@ public class MongoPlantRepository implements PlantRepository {
         }
 
         ObjectId plantId = new ObjectId(plant.getId());
+        plantEnt newEnt = MongoPlantMapper.ObjToEnt(plant);
 
-        plantEnt existingEnt = collection.find(Filters.eq("_id", plantId)).first();
-        if (existingEnt == null) {
+        Bson update = Updates.combine(
+                Updates.set("name", newEnt.getName()),
+                Updates.set("color", newEnt.getColor()),
+                Updates.set("cost", newEnt.getCost()),
+                Updates.set("plantType", newEnt.getPlantType()),
+                Updates.set("favouriteFood", newEnt.getFavouriteFood()),
+                Updates.set("leafSize", newEnt.getLeafSize()),
+                Updates.set("spiky", newEnt.getSpiky())
+        );
+
+        UpdateResult result = collection.updateOne(Filters.eq("_id", plantId), update);
+
+        if (result.getMatchedCount() == 0) {
             throw new ResourceNotFoundException("Plant with id " + plantId + " not found");
         }
-        plantEnt newEnt = MongoPlantMapper.ObjToEnt(plant);
-        newEnt.setHasRentHistory(existingEnt.isHasRentHistory());
-        collection.replaceOne(Filters.eq("_id", plantId), newEnt);
+
     }
 
     @Override
