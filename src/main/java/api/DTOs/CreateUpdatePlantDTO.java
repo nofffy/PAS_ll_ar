@@ -2,8 +2,8 @@ package api.DTOs;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
+import model.PlantTypes.PlantType;
 
 public class CreateUpdatePlantDTO {
     @NotBlank(message = "Name is required")
@@ -16,11 +16,11 @@ public class CreateUpdatePlantDTO {
     @Positive(message = "Cost must be greater than 0")
     private Double cost;
 
-    @NotBlank(message = "Plant type is required")
-    @Pattern(regexp = "^(BASIC|CARNIVOROUS|MONSTERA|SUCCULENT)$", message = "Plant type has to be one of: BASIC, CARNIVOROUS, MONSTERA, SUCCULENT")
-    private String type;
+    @NotNull(message = "Plant type is required")
+    private PlantType type;
 
     private String favouriteFood;
+    @Positive(message = "Leaf size must be greater than 0")
     private Integer leafSize;
     private Boolean spiky;
 
@@ -48,11 +48,11 @@ public class CreateUpdatePlantDTO {
         this.cost = cost;
     }
 
-    public String getType() {
+    public PlantType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(PlantType type) {
         this.type = type;
     }
 

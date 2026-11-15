@@ -46,7 +46,7 @@ public class MemoryRentRepository implements RentRepository {
     }
 
     @Override
-    public void addRent(Rent rent) {
+    public Rent addRent(Rent rent) {
         if(rent == null) {
             throw new IllegalArgumentException("Can't be null");
         }
@@ -68,7 +68,7 @@ public class MemoryRentRepository implements RentRepository {
             rent.setId(newId);
             rents.put(newId, rent);
         }
-
+        return rent;
     }
 
     @Override

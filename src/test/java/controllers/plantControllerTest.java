@@ -4,6 +4,7 @@ import com.mongodb.client.MongoDatabase;
 import db.MongoDBManager;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import model.PlantTypes.PlantType;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,7 @@ public class plantControllerTest {
         return location.substring(location.lastIndexOf('/') + 1);
     }
 
-    private String createPlant(String name, String color, double cost, String type) {
+    private String createPlant(String name, String color, double cost, PlantType type) {
         String json = """
                 {
                     "name": "%s",
@@ -112,7 +113,7 @@ public class plantControllerTest {
     @Test
     public void ReadPlant() {
         String name = "read-plant";
-        String id = createPlant(name, "green", 89.0, "BASIC");
+        String id = createPlant(name, "green", 89.0, PlantType.BASIC);
         given().when()
                 .get("/api/plants/" + id)
                 .then()
@@ -124,7 +125,7 @@ public class plantControllerTest {
     @Test
     public void UpdatePlant() {
         String name = "update-plant";
-        String id = createPlant(name, "green", 10.0, "BASIC");
+        String id = createPlant(name, "green", 10.0, PlantType.BASIC);
         String updatedName = "aktualizacja Kaktus";
         String updatedJson = """
                 {
@@ -152,7 +153,7 @@ public class plantControllerTest {
     @Test
     public void DeletePlant() {
         String name = "delete-plant";
-        String id = createPlant(name, "green", 10.0, "BASIC");
+        String id = createPlant(name, "green", 10.0, PlantType.BASIC);
         given().when()
                 .delete("/api/plants/" + id)
                 .then()
@@ -167,7 +168,7 @@ public class plantControllerTest {
 
     @Test
     public void DeletePlant_WithoutRents_ShouldSucceed() {
-        String plantId = createPlant("no-rent-plant", "green", 10.0, "BASIC");
+        String plantId = createPlant("no-rent-plant", "green", 10.0, PlantType.BASIC);
         given().when()
                 .delete("/api/plants/" + plantId)
                 .then()
@@ -284,7 +285,7 @@ public class plantControllerTest {
     @Test
     public void isRentedDeleteTest() {
         String clientId = createClient("rented-client");
-        String plantId = createPlant("rented-plant", "green", 10.0, "BASIC");
+        String plantId = createPlant("rented-plant", "green", 10.0, PlantType.BASIC);
         createRent(clientId, plantId);
 
         given().when()

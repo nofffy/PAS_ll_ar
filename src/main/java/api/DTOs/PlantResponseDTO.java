@@ -1,11 +1,13 @@
 package api.DTOs;
 
+import model.PlantTypes.PlantType;
+
 public class PlantResponseDTO {
     private String id;
     private String name;
     private String color;
     private Double cost;
-    private String type;
+    private PlantType type;
 
     private String favouriteFood;
     private Integer leafSize;
@@ -43,11 +45,11 @@ public class PlantResponseDTO {
         this.cost = cost;
     }
 
-    public String getType() {
+    public PlantType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(PlantType type) {
         this.type = type;
     }
 

@@ -19,13 +19,10 @@ public class PlantManager {
     @Inject
     private PlantRepository plantRepository;
 
-    @Inject
-    private RentRepository rentRepository;
-
     public PlantResponseDTO createPlant(CreateUpdatePlantDTO plant) {
         Plant newPlant = PlantDTOMapper.DTOToModel(plant);
-        plantRepository.addPlant(newPlant);
-        return PlantDTOMapper.ModelToDTO(newPlant);
+        Plant plantWithId = plantRepository.addPlant(newPlant);
+        return PlantDTOMapper.ModelToDTO(plantWithId);
     }
 
     public PlantResponseDTO getPlant(String id) {

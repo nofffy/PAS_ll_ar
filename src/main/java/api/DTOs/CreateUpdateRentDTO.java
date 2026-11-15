@@ -1,14 +1,15 @@
 package api.DTOs;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
 public class CreateUpdateRentDTO {
-    @NotNull(message = "Client id is required")
+    @NotBlank(message = "Client id is required")
     private String clientId;
 
-    @NotNull(message = "Plant id is required")
+    @NotBlank(message = "Plant id is required")
     private String plantId;
 
     private LocalDateTime rentStart;

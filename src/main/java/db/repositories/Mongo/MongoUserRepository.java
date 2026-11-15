@@ -50,20 +50,20 @@ public class MongoUserRepository implements UserRepository {
     }
 
     @Override
-    public void addUser(User user) {
+    public User addUser(User user) {
         if (user == null) {
             throw new IllegalArgumentException("Can't be null");
         }
         userEnt ent = MongoUserMapper.ObjToEnt(user);
         try {
             collection.insertOne(ent);
-            user.setId(ent.getId().toHexString());
         } catch (MongoWriteException e) {
             if (e.getError().getCode() == 11000) {
                 throw new UserLoginAlreadyUsedException("User with login " + user.getLogin() + " already exists");
             }
             throw e;
         }
+        return MongoUserMapper.EntToObj(ent);
     }
 
     @Override

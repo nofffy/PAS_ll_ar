@@ -1,9 +1,11 @@
 package api.DTOs;
 
+import model.UserTypes.UserType;
+
 public class UserResponseDTO {
     private String id;
     private String login;
-    private String type;
+    private UserType type;
     private Boolean active;
 
     private Integer maxRents;
@@ -24,11 +26,11 @@ public class UserResponseDTO {
         this.login = login;
     }
 
-    public String getType() {
+    public UserType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(UserType type) {
         this.type = type;
     }
 

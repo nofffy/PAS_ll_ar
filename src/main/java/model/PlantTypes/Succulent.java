@@ -20,4 +20,9 @@ public class Succulent extends Plant {
     public double getUniqueValue() {
         return spiky ? 10.0 : 4.0;
     }
+
+    @Override
+    public PlantType getType() {
+        return PlantType.SUCCULENT;
+    }
 }

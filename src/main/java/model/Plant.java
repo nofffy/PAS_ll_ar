@@ -1,5 +1,7 @@
 package model;
 
+import model.PlantTypes.PlantType;
+
 public abstract class Plant {
     private String id;
     private String name;
@@ -44,4 +46,6 @@ public abstract class Plant {
     public void setId(String id) {
         this.id = id;
     }
+
+    public abstract PlantType getType();
 }

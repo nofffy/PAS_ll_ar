@@ -24,7 +24,7 @@ public class MemoryUserRepository implements UserRepository {
     public MemoryUserRepository() {}
 
     @Override
-    public void addUser(User user) {
+    public User addUser(User user) {
         if (user == null) {
             throw new IllegalArgumentException("Can't be null");
         }
@@ -35,6 +35,7 @@ public class MemoryUserRepository implements UserRepository {
             throw new UserLoginAlreadyUsedException("User with login " + user.getLogin() + " already exists");
         }
         users.put(newId, user);
+        return user;
     }
 
     @Override

@@ -70,8 +70,8 @@ public class RentManager {
             startTime = LocalDateTime.now();
         }
         Rent newRent = new Rent(user, plant, startTime);
-        rentRepository.addRent(newRent);
-        return RentDTOMapper.ModelToDTO(newRent);
+        Rent rentWithId = rentRepository.addRent(newRent);
+        return RentDTOMapper.ModelToDTO(rentWithId);
     }
 
     public void finishRent(String id) {

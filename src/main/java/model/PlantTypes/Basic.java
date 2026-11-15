@@ -11,4 +11,9 @@ public class Basic extends Plant {
     public double getUniqueValue() {
         return 0.0;
     }
+
+    @Override
+    public PlantType getType() {
+        return PlantType.BASIC;
+    }
 }

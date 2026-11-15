@@ -1,15 +1,15 @@
 package api.DTOs;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotNull;
+import model.UserTypes.UserType;
 
 public class CreateUpdateUserDTO {
     @NotBlank(message = "Login is required")
     private String login;
 
-    @NotBlank(message = "User type is required")
-    @Pattern(regexp = "^(ADMIN|GARDENER|CLIENT)$", message = "User type has to be one of: ADMIN, GARDENER, CLIENT")
-    private String type;
+    @NotNull(message = "User type is required")
+    private UserType type;
     private Integer maxRents;
 
     private Boolean active;
@@ -20,9 +20,9 @@ public class CreateUpdateUserDTO {
 
     public void setLogin(String login) { this.login = login; }
 
-    public String getType() { return type;}
+    public UserType getType() { return type;}
 
-    public void setType(String type) { this.type = type;}
+    public void setType(UserType type) { this.type = type;}
 
     public Integer getMaxRents() { return maxRents;}
 

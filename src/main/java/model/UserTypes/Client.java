@@ -22,4 +22,9 @@ public class Client extends User {
     public void setMaxRents(int maxRents) {
         this.maxRents = maxRents;
     }
+
+    @Override
+    public UserType getUserType() {
+        return UserType.CLIENT;
+    }
 }

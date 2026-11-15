@@ -34,13 +34,14 @@ public class MemoryPlantRepository implements PlantRepository {
     }
 
     @Override
-    public void addPlant(Plant plant) {
+    public Plant addPlant(Plant plant) {
         if (plant == null) {
             throw new IllegalArgumentException("Can't be null");
         }
         String newId = UUID.randomUUID().toString();
         plant.setId(newId);
         plants.put(plant.getId(), plant);
+        return plant;
     }
 
     @Override

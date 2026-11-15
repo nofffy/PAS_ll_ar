@@ -1,5 +1,7 @@
 package model;
 
+import model.UserTypes.UserType;
+
 public abstract class User {
     private String id;
     private String login;
@@ -35,5 +37,5 @@ public abstract class User {
         this.active = active;
     }
 
-
+    public abstract UserType getUserType();
 }

@@ -3,34 +3,19 @@ package api.DTOmappers;
 import api.DTOs.CreateUpdateUserDTO;
 import api.DTOs.UserResponseDTO;
 import model.User;
-import model.UserTypes.Admin;
-import model.UserTypes.Client;
-import model.UserTypes.Gardener;
+import model.UserTypes.*;
 
 public class UserDTOMapper {
     public static User DTOToModel(CreateUpdateUserDTO userDTO) {
-        User newUser;
-
-        boolean isActive = true;
-        if (userDTO.getActive() != null) {
-            isActive = userDTO.getActive();
+        if (userDTO.getType() == null) {
+            throw new IllegalArgumentException("Type can't be null");
         }
 
-        String type = userDTO.getType();
-        if (type.equals("ADMIN")) {
-            newUser = new Admin(userDTO.getLogin(), isActive);
-        } else if (type.equals("GARDENER")) {
-            newUser = new Gardener(userDTO.getLogin(), isActive);
-        } else if (type.equals("CLIENT")) {
-            if (userDTO.getMaxRents() != null) {
-                newUser = new Client(userDTO.getLogin(), isActive, userDTO.getMaxRents());
-            } else {
-                newUser = new Client(userDTO.getLogin(), isActive);
-            }
-        } else {
-            throw new IllegalArgumentException("Unknown user type");
-        }
-        return newUser;
+        return switch(userDTO.getType()) {
+            case ADMIN -> new Admin(userDTO.getLogin(), userDTO.getActive());
+            case GARDENER -> new Gardener(userDTO.getLogin(), userDTO.getActive());
+            case CLIENT ->  new Client(userDTO.getLogin(), userDTO.getActive());
+        };
     }
 
     public static UserResponseDTO ModelToDTO(User user) {
@@ -39,13 +24,13 @@ public class UserDTOMapper {
         dto.setLogin(user.getLogin());
         dto.setActive(user.isActive());
 
-        if (user instanceof Admin) {
-            dto.setType("ADMIN");
-        } else if(user instanceof Gardener) {
-            dto.setType("GARDENER");
-        } else if(user instanceof Client) {
-            dto.setType("CLIENT");
-            dto.setMaxRents(((Client) user).getMaxRents());
+        UserType userType = user.getUserType();
+        dto.setType(userType);
+
+        switch (userType) {
+            case ADMIN -> {}
+            case GARDENER -> {}
+            case CLIENT -> dto.setMaxRents(((Client) user).getMaxRents());
         }
         return dto;
     }

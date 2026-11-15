@@ -34,4 +34,9 @@ public class Monstera extends Plant {
             return leafSize*0.8;
         }
     }
+
+    @Override
+    public PlantType getType() {
+        return PlantType.MONSTERA;
+    }
 }

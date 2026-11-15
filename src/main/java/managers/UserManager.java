@@ -19,8 +19,8 @@ public class UserManager {
 
     public UserResponseDTO createUser(CreateUpdateUserDTO user) {
         User newUser = UserDTOMapper.DTOToModel(user);
-        userRepository.addUser(newUser);
-        return UserDTOMapper.ModelToDTO(newUser);
+        User userWithId = userRepository.addUser(newUser);
+        return UserDTOMapper.ModelToDTO(userWithId);
     }
 
     public UserResponseDTO getUser(String id) {

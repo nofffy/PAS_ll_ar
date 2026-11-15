@@ -2,10 +2,7 @@ package db.mappers.Mongo;
 
 import db.entities.Mongo.plantEnt;
 import model.Plant;
-import model.PlantTypes.Basic;
-import model.PlantTypes.Carnivorous;
-import model.PlantTypes.Monstera;
-import model.PlantTypes.Succulent;
+import model.PlantTypes.*;
 import org.bson.types.ObjectId;
 
 public class MongoPlantMapper {
@@ -21,18 +18,14 @@ public class MongoPlantMapper {
         ent.setName(plant.getName());
         ent.setColor(plant.getColor());
         ent.setCost(plant.getCost());
+        PlantType type = plant.getType();
+        ent.setPlantType(type.name());
 
-        if (plant instanceof Basic) {
-            ent.setPlantType("BASIC");
-        } else if (plant instanceof Carnivorous c) {
-            ent.setPlantType("CARNIVOROUS");
-            ent.setFavouriteFood(c.getFavouriteFood());
-        } else if (plant instanceof Monstera m) {
-            ent.setPlantType("MONSTERA");
-            ent.setLeafSize(m.getLeafSize());
-        } else if (plant instanceof Succulent s) {
-            ent.setPlantType("SUCCULENT");
-            ent.setSpiky(s.isSpiky());
+        switch (type) {
+            case BASIC -> {}
+            case CARNIVOROUS -> ent.setFavouriteFood(((Carnivorous) plant).getFavouriteFood());
+            case MONSTERA -> ent.setLeafSize(((Monstera) plant).getLeafSize());
+            case SUCCULENT -> ent.setSpiky(((Succulent) plant).isSpiky());
         }
         return ent;
     }
@@ -41,20 +34,19 @@ public class MongoPlantMapper {
         if (ent == null) return null;
 
         String id = ent.getId() != null ? ent.getId().toHexString() : null;
-        Plant plant;
-
-        String type = ent.getPlantType();
-        if (type.equals("BASIC")) {
-            plant = new Basic(ent.getName(), ent.getColor(), ent.getCost());
-        } else if (type.equals("CARNIVOROUS")) {
-            plant = new Carnivorous(ent.getName(), ent.getColor(), ent.getCost(), ent.getFavouriteFood());
-        } else if (type.equals("MONSTERA")) {
-            plant = new Monstera(ent.getName(), ent.getColor(), ent.getCost(), ent.getLeafSize());
-        } else if (type.equals("SUCCULENT")) {
-            plant = new Succulent(ent.getName(), ent.getColor(), ent.getCost(), ent.getSpiky());
-        } else {
-            throw new IllegalStateException("Unknown plant type: " + type);
+        PlantType type;
+        try {
+            type = PlantType.valueOf(ent.getPlantType());
+        } catch (Exception e) {
+            throw new IllegalStateException("Unknown plant type: " + ent.getPlantType());
         }
+
+        Plant plant = switch (type) {
+            case BASIC -> new Basic(ent.getName(), ent.getColor(), ent.getCost());
+            case CARNIVOROUS -> new Carnivorous(ent.getName(), ent.getColor(), ent.getCost(), ent.getFavouriteFood());
+            case MONSTERA -> new Monstera(ent.getName(), ent.getColor(), ent.getCost(), ent.getLeafSize());
+            case SUCCULENT -> new Succulent(ent.getName(), ent.getColor(), ent.getCost(), ent.getSpiky());
+        };
         plant.setId(id);
         return plant;
     }

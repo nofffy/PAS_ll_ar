@@ -3,37 +3,35 @@ package api.DTOmappers;
 import api.DTOs.CreateUpdatePlantDTO;
 import api.DTOs.PlantResponseDTO;
 import model.Plant;
-import model.PlantTypes.Basic;
-import model.PlantTypes.Carnivorous;
-import model.PlantTypes.Monstera;
-import model.PlantTypes.Succulent;
+import model.PlantTypes.*;
 
 public class PlantDTOMapper {
     public static Plant DTOToModel(CreateUpdatePlantDTO plantDTO) {
-        Plant newPlant;
-
-        String type = plantDTO.getType();
-        if (type.equals("BASIC")) {
-            newPlant = new Basic(plantDTO.getName(), plantDTO.getColor(), plantDTO.getCost());
-        } else if (type.equals("CARNIVOROUS")) {
-            if (plantDTO.getFavouriteFood() == null) {
-                throw new IllegalArgumentException("Unknown favourite food info");
-            }
-            newPlant = new Carnivorous(plantDTO.getName(), plantDTO.getColor(), plantDTO.getCost(), plantDTO.getFavouriteFood());
-        } else if (type.equals("MONSTERA")) {
-            if (plantDTO.getLeafSize() == null) {
-                throw new IllegalArgumentException("Unknown leaf size");
-            }
-            newPlant = new Monstera(plantDTO.getName(), plantDTO.getColor(), plantDTO.getCost(), plantDTO.getLeafSize());
-        } else if (type.equals("SUCCULENT")) {
-            if (plantDTO.isSpiky() == null) {
-                throw new IllegalArgumentException("Unknown spiky info");
-            }
-            newPlant = new Succulent(plantDTO.getName(), plantDTO.getColor(), plantDTO.getCost(), plantDTO.isSpiky());
-        } else {
-            throw new IllegalArgumentException("Unknown plant type");
+        if (plantDTO.getType() == null) {
+            throw new IllegalArgumentException("Type can't be null");
         }
-        return newPlant;
+
+        return switch (plantDTO.getType()) {
+            case BASIC -> new Basic(plantDTO.getName(), plantDTO.getColor(), plantDTO.getCost());
+            case CARNIVOROUS -> {
+                if (plantDTO.getFavouriteFood() == null) {
+                    throw new IllegalArgumentException("Unknown favourite food info");
+                }
+                yield new Carnivorous(plantDTO.getName(), plantDTO.getColor(), plantDTO.getCost(), plantDTO.getFavouriteFood());
+            }
+            case MONSTERA -> {
+                if (plantDTO.getLeafSize() == null) {
+                    throw new IllegalArgumentException("Unknown leaf size");
+                }
+                yield new Monstera(plantDTO.getName(), plantDTO.getColor(), plantDTO.getCost(), plantDTO.getLeafSize());
+            }
+            case SUCCULENT -> {
+                if (plantDTO.isSpiky() == null) {
+                    throw new IllegalArgumentException("Unknown spiky info");
+                }
+                yield new Succulent(plantDTO.getName(), plantDTO.getColor(), plantDTO.getCost(), plantDTO.isSpiky());
+            }
+        };
     }
 
     public static PlantResponseDTO ModelToDTO(Plant plant) {
@@ -43,17 +41,14 @@ public class PlantDTOMapper {
         dto.setColor(plant.getColor());
         dto.setCost(plant.getCost());
 
-        if (plant instanceof Basic) {
-            dto.setType("BASIC");
-        } else if (plant instanceof Carnivorous c) {
-            dto.setType("CARNIVOROUS");
-            dto.setFavouriteFood(c.getFavouriteFood());
-        } else if (plant instanceof Monstera m) {
-            dto.setType("MONSTERA");
-            dto.setLeafSize(m.getLeafSize());
-        } else if (plant instanceof Succulent s) {
-            dto.setType("SUCCULENT");
-            dto.setSpiky(s.isSpiky());
+        PlantType type = plant.getType();
+        dto.setType(type);
+
+        switch (type) {
+            case BASIC -> {}
+            case CARNIVOROUS -> dto.setFavouriteFood(((Carnivorous) plant).getFavouriteFood());
+            case MONSTERA -> dto.setLeafSize(((Monstera) plant).getLeafSize());
+            case SUCCULENT -> dto.setSpiky(((Succulent) plant).isSpiky());
         }
         return dto;
     }

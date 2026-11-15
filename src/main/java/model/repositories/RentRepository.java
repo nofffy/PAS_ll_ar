@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface RentRepository {
     Rent getRent(String id);
-    void addRent(Rent rent);
+    Rent addRent(Rent rent);
     void removeRent(String id);
     void finishRent(String id);
 

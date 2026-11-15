@@ -42,13 +42,13 @@ public class MongoPlantRepository implements PlantRepository {
     }
 
     @Override
-    public void addPlant(Plant plant) {
+    public Plant addPlant(Plant plant) {
         if (plant == null) {
             throw new IllegalArgumentException("Can't be null");
         }
         plantEnt ent = MongoPlantMapper.ObjToEnt(plant);
         collection.insertOne(ent);
-        plant.setId(ent.getId().toHexString());
+        return MongoPlantMapper.EntToObj(ent);
     }
 
     @Override

@@ -27,4 +27,9 @@ public class Carnivorous extends Plant {
             return 7.0;
         }
     }
+
+    @Override
+    public PlantType getType() {
+        return PlantType.CARNIVOROUS;
+    }
 }

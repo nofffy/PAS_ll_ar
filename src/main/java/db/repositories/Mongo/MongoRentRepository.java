@@ -71,7 +71,7 @@ public class MongoRentRepository implements RentRepository {
     }
 
     @Override
-    public void addRent(Rent rent) {
+    public Rent addRent(Rent rent) {
         if (rent == null) {
             throw new IllegalArgumentException("Can't be null");
         }
@@ -89,13 +89,13 @@ public class MongoRentRepository implements RentRepository {
         rentEnt ent = MongoRentMapper.ObjToEnt(rent);
         try {
             collection.insertOne(ent);
-            rent.setId(ent.getId().toHexString());
         } catch (MongoWriteException e) {
             if (e.getError().getCode() == 11000) {
                 throw new ResourceConflictException("Plant with id " + plantId + " is rented");
             }
             throw e;
         }
+        return MongoRentMapper.EntToObj(ent);
     }
 
     @Override

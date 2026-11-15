@@ -4,6 +4,7 @@ import com.mongodb.client.MongoDatabase;
 import db.MongoDBManager;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import model.UserTypes.UserType;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,7 @@ public class userControllerTest {
         return location.substring(location.lastIndexOf('/') + 1);
     }
 
-    private String createUser(String login, boolean active, String type) {
+    private String createUser(String login, boolean active, UserType type) {
         String json = """
                 {
                     "login": "%s",
@@ -75,7 +76,7 @@ public class userControllerTest {
     @Test
     public void ReadUser() {
         String login = "read-user";
-        String id = createUser(login, true, "CLIENT");
+        String id = createUser(login, true, UserType.CLIENT);
         given().when()
                 .get("/api/users/" + id)
                 .then()
@@ -87,7 +88,7 @@ public class userControllerTest {
     @Test
     public void UpdateUser() {
         String login = "update-user";
-        String id = createUser(login, false, "CLIENT");
+        String id = createUser(login, false, UserType.CLIENT);
         String updatedLogin = "unbanned_michael";
         String updatedJson = """
                 {
@@ -113,7 +114,7 @@ public class userControllerTest {
     @Test
     public void ActivateUser() {
         String login = "activate-user";
-        String id = createUser(login, false, "CLIENT");
+        String id = createUser(login, false, UserType.CLIENT);
         given().when()
                 .get("/api/users/" + id)
                 .then()
@@ -134,7 +135,7 @@ public class userControllerTest {
     @Test
     public void DeactivateUser() {
         String login = "deactivate-user";
-        String id = createUser(login, true, "CLIENT");
+        String id = createUser(login, true, UserType.CLIENT);
         given().when()
                 .get("/api/users/" + id)
                 .then()
@@ -157,7 +158,7 @@ public class userControllerTest {
     @Test
     public void CreateUser_Client_HasMaxRents() {
         String login = "client-with-max";
-        String id = createUser(login, true, "CLIENT");
+        String id = createUser(login, true, UserType.CLIENT);
         given().when()
                 .get("/api/users/" + id)
                 .then()
@@ -168,7 +169,7 @@ public class userControllerTest {
     @Test
     public void GetUserByLogin_Found() {
         String login = "by-login-user";
-        createUser(login, true, "CLIENT");
+        createUser(login, true, UserType.CLIENT);
         given().when()
                 .get("/api/users/login/" + login)
                 .then()
@@ -182,9 +183,9 @@ public class userControllerTest {
         String login1 = prefix + "-alpha";
         String login2 = prefix + "-sigma";
         String login3 = "other-user";
-        createUser(login1, true, "CLIENT");
-        createUser(login2, true, "CLIENT");
-        createUser(login3, true, "CLIENT");
+        createUser(login1, true, UserType.CLIENT);
+        createUser(login2, true, UserType.CLIENT);
+        createUser(login3, true, UserType.CLIENT);
 
         given().when()
                 .get("/api/users?loginPattern=" + prefix)
@@ -198,8 +199,8 @@ public class userControllerTest {
     public void FindAllActive_ReturnsOnlyActive() {
         String activeLogin = "active-user";
         String inactiveLogin = "inactive-user";
-        createUser(activeLogin, true, "CLIENT");
-        createUser(inactiveLogin, false, "CLIENT");
+        createUser(activeLogin, true, UserType.CLIENT);
+        createUser(inactiveLogin, false, UserType.CLIENT);
 
         given().when()
                 .get("/api/users?active=true")
@@ -213,8 +214,8 @@ public class userControllerTest {
     public void FindAllInactive_ReturnsOnlyInactive() {
         String activeLogin = "active-user-2";
         String inactiveLogin = "inactive-user-2";
-        createUser(activeLogin, true, "CLIENT");
-        createUser(inactiveLogin, false, "CLIENT");
+        createUser(activeLogin, true, UserType.CLIENT);
+        createUser(inactiveLogin, false, UserType.CLIENT);
 
         given().when()
                 .get("/api/users?active=false")
@@ -288,8 +289,8 @@ public class userControllerTest {
     public void UpdateUser_ChangeLoginToExisting_ShouldFail() {
         String login1 = "existing-login-1";
         String login2 = "existing-login-2";
-        createUser(login1, true, "CLIENT");
-        String id2 = createUser(login2, true, "CLIENT");
+        createUser(login1, true, UserType.CLIENT);
+        String id2 = createUser(login2, true, UserType.CLIENT);
 
         String updatedJson = """
                 {
@@ -395,7 +396,7 @@ public class userControllerTest {
     @Test
     public void uniqueLoginTest() {
         String login = "duplicate-user";
-        createUser(login, true, "CLIENT");
+        createUser(login, true, UserType.CLIENT);
         String duplicateJson = """
                 {
                     "login": "%s",
