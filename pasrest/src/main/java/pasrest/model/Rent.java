@@ -1,0 +1,54 @@
+package pasrest.model;
+
+import java.time.LocalDateTime;
+
+public class Rent {
+    private String id;
+    private User client;
+    private Plant plant;
+    private LocalDateTime rentStart;
+    private LocalDateTime rentEnd = null;
+
+    public Rent(User client, Plant plant, LocalDateTime rentStart) {
+        this.id = null;
+        this.client = client;
+        this.plant = plant;
+        this.rentStart = rentStart;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public User getClient() {
+        return client;
+    }
+
+    public void setClient(User client) {
+        this.client = client;
+    }
+
+    public Plant getPlant() { return plant; }
+
+    public void setPlants(Plant plant) {
+        this.plant = plant;
+    }
+
+    public LocalDateTime getRentStart() {
+        return rentStart;
+    }
+
+    public void setRentStart(LocalDateTime rentStart) {
+        this.rentStart = rentStart;
+    }
+
+    public LocalDateTime getRentEnd() { return rentEnd; }
+
+    public void setRentEnd(LocalDateTime rentEnd) { this.rentEnd = rentEnd; }
+
+    public void endRent() { this.rentEnd = LocalDateTime.now(); }
+}

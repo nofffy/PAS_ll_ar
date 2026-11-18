@@ -1,10 +1,10 @@
 package controllers;
 
 import com.mongodb.client.MongoDatabase;
-import db.MongoDBManager;
+import pasrest.db.MongoDBManager;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import model.UserTypes.UserType;
+import pasrest.model.UserTypes.UserType;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;

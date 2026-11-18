@@ -1,0 +1,14 @@
+package pasrest.model.UserTypes;
+
+import pasrest.model.User;
+
+public class Gardener extends User {
+    public Gardener(String login, boolean active) {
+        super(login, active);
+    }
+
+    @Override
+    public UserType getUserType() {
+        return UserType.GARDENER;
+    }
+}

@@ -1,7 +1,7 @@
 package controllers;
 
 import com.mongodb.client.MongoDatabase;
-import db.MongoDBManager;
+import pasrest.db.MongoDBManager;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.bson.Document;
