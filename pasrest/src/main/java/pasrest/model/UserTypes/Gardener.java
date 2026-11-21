@@ -7,6 +7,10 @@ public class Gardener extends User {
         super(login, active);
     }
 
+    public Gardener(String login, String password, String email, int age, boolean active) {
+        super(login, password, email, age, active);
+    }
+
     @Override
     public UserType getUserType() {
         return UserType.GARDENER;

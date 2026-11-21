@@ -49,14 +49,16 @@ public class plantControllerTest {
         return extractId(response);
     }
 
-    private String createClient(String login) {
+    private String createClient(String login, String password, String email, int age) {
         String json = """
                 {
                     "login": "%s",
+                    "password": "%s",
+                    "email": "%s",
                     "active": true,
                     "type": "CLIENT"
                 }
-                """.formatted(login);
+                """.formatted(login, password, email, age);
         Response response = given().contentType(ContentType.JSON)
                 .body(json)
                 .when()
@@ -284,7 +286,7 @@ public class plantControllerTest {
 
     @Test
     public void isRentedDeleteTest() {
-        String clientId = createClient("rented-client");
+        String clientId = createClient("rented-client", "psswd", "email", 22);
         String plantId = createPlant("rented-plant", "green", 10.0, PlantType.BASIC);
         createRent(clientId, plantId);
 

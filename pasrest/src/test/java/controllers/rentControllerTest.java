@@ -29,14 +29,17 @@ public class rentControllerTest {
         return location.substring(location.lastIndexOf('/') + 1);
     }
 
-    private String createClient(String login, boolean active) {
+    private String createClient(String login, String password, String email, int age, boolean active) {
         String json = """
                 {
                     "login": "%s",
+                    "password": "%s",
+                    "email": "%s",
+                    "age": %s,
                     "active": %s,
                     "type": "CLIENT"
                 }
-                """.formatted(login, active);
+                """.formatted(login, password, email, age, active);
         Response response = given().contentType(ContentType.JSON)
                 .body(json)
                 .when()
@@ -88,7 +91,10 @@ public class rentControllerTest {
     @Test
     public void CreateRent() {
         String clientLogin = "rent-client";
-        String clientId = createClient(clientLogin, true);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        String clientId = createClient(clientLogin, password, email, age, true);
         String plantId = createPlant("rent-plant");
         String rentJson = """
                 {
@@ -112,7 +118,10 @@ public class rentControllerTest {
     @Test
     public void ReadRent() {
         String clientLogin = "read-rent-client";
-        String clientId = createClient(clientLogin, true);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        String clientId = createClient(clientLogin, password, email, age, true);
         String plantName = "read-rent-plant";
         String plantId = createPlant(plantName);
         String rentId = createRent(clientId, plantId);
@@ -126,7 +135,10 @@ public class rentControllerTest {
 
     @Test
     public void DeleteRent() {
-        String clientId = createClient("del-rent-client", true);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        String clientId = createClient("del-rent-client", password, email, age, true);
         String plantId = createPlant("del-rent-plant");
         String rentId = createRent(clientId, plantId);
         given().when()
@@ -144,7 +156,10 @@ public class rentControllerTest {
     @Test
     public void maxRentsLimitTest_AfterRemove_CanRentAgain() {
         String clientLogin = "max-rents-remove-client";
-        String clientId = createClient(clientLogin, true);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        String clientId = createClient(clientLogin, password, email, age, true);
         int actualMaxRents = given().when()
                 .get("/api/users/" + clientId)
                 .then()
@@ -180,8 +195,11 @@ public class rentControllerTest {
 
     @Test
     public void CreateRent_AfterRemove_PlantCanBeRentedAgain() {
-        String clientId1 = createClient("reuse-rm-client-1", true);
-        String clientId2 = createClient("reuse-rm-client-2", true);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        String clientId1 = createClient("reuse-rm-client-1", password, email, age, true);
+        String clientId2 = createClient("reuse-rm-client-2", password, email, age, true);
         String plantId = createPlant("reuse-rm-plant");
 
         String rentId = createRent(clientId1, plantId);
@@ -207,7 +225,10 @@ public class rentControllerTest {
 
     @Test
     public void CreateRent_WithCustomRentStart() {
-        String clientId = createClient("custom-start-client", true);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        String clientId = createClient("custom-start-client", password, email, age, true);
         String plantId = createPlant("custom-start-plant");
         String rentJson = """
                 {
@@ -232,7 +253,10 @@ public class rentControllerTest {
 
     @Test
     public void CreateRent_WithoutRentStart_UsesNow() {
-        String clientId = createClient("default-start-client", true);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        String clientId = createClient("default-start-client", password, email, age, true);
         String plantId = createPlant("default-start-plant");
         String rentJson = """
                 {
@@ -258,7 +282,10 @@ public class rentControllerTest {
 
     @Test
     public void GetRents_ReturnsAllRents() {
-        String clientId = createClient("all-rents-client", true);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        String clientId = createClient("all-rents-client", password, email, age, true);
         String plantId1 = createPlant("all-rents-plant-1");
         String plantId2 = createPlant("all-rents-plant-2");
         String rentId1 = createRent(clientId, plantId1);
@@ -323,7 +350,10 @@ public class rentControllerTest {
 
     @Test
     public void isAlreadyRentedTest() {
-        String clientId = createClient("conflict-client", true);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        String clientId = createClient("conflict-client", password, email, age, true);
         String plantId = createPlant("conflict-plant");
         createRent(clientId, plantId);
 
@@ -343,7 +373,10 @@ public class rentControllerTest {
 
     @Test
     public void inactiveClientTest() {
-        String clientId = createClient("inactive-client", false);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        String clientId = createClient("inactive-client", password, email, age, false);
         String plantId = createPlant("inactive-plant");
 
         String rentJson = """
@@ -379,7 +412,10 @@ public class rentControllerTest {
 
     @Test
     public void validationTest_PlantIdNull() {
-        String clientId = createClient("validation-client", true);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        String clientId = createClient("validation-client", password, email, age, true);
         String invalidRentJson = """
                 {
                     "clientId": "%s",
@@ -413,7 +449,10 @@ public class rentControllerTest {
 
     @Test
     public void CreateRent_PlantNotFound() {
-        String clientId = createClient("no-plant-client", true);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        String clientId = createClient("no-plant-client", password, email, age, true);
         String rentJson = """
                 {
                     "clientId": "%s",
@@ -431,7 +470,10 @@ public class rentControllerTest {
     @Test
     public void maxRentsLimitTest() {
         String clientLogin = "max-rents-client";
-        String clientId = createClient(clientLogin, true);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        String clientId = createClient(clientLogin, password, email, age, true);
         int actualMaxRents = given().when()
                 .get("/api/users/" + clientId)
                 .then()

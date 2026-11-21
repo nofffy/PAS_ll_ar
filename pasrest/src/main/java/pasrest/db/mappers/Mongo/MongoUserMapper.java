@@ -19,6 +19,9 @@ public class MongoUserMapper {
             ent.setId(new ObjectId(user.getId()));
         }
         ent.setLogin(user.getLogin());
+        ent.setPassword(user.getPassword());
+        ent.setEmail(user.getEmail());
+        ent.setAge(user.getAge());
         ent.setActive(user.isActive());
         UserType type = user.getUserType();
         ent.setUserType(type.name());
@@ -45,9 +48,9 @@ public class MongoUserMapper {
         }
 
         User user = switch (type) {
-            case ADMIN -> new Admin(userEnt.getLogin(), userEnt.isActive());
-            case GARDENER -> new Gardener(userEnt.getLogin(), userEnt.isActive());
-            case CLIENT -> new Client(userEnt.getLogin(), userEnt.isActive(), userEnt.getMaxRents());
+            case ADMIN -> new Admin(userEnt.getLogin(), userEnt.getPassword(), userEnt.getEmail(), userEnt.getAge(), userEnt.isActive());
+            case GARDENER -> new Gardener(userEnt.getLogin(), userEnt.getPassword(), userEnt.getEmail(), userEnt.getAge(), userEnt.isActive());
+            case CLIENT -> new Client(userEnt.getLogin(), userEnt.getPassword(), userEnt.getEmail(), userEnt.getAge(), userEnt.isActive(), userEnt.getMaxRents());
         };
         user.setId(id);
         return user;

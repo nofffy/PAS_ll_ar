@@ -12,9 +12,9 @@ public class UserDTOMapper {
         }
 
         return switch(userDTO.getType()) {
-            case ADMIN -> new Admin(userDTO.getLogin(), userDTO.getActive());
-            case GARDENER -> new Gardener(userDTO.getLogin(), userDTO.getActive());
-            case CLIENT ->  new Client(userDTO.getLogin(), userDTO.getActive());
+            case ADMIN -> new Admin(userDTO.getLogin(), userDTO.getPassword(), userDTO.getEmail(), userDTO.getAge(), userDTO.getActive());
+            case GARDENER -> new Gardener(userDTO.getLogin(), userDTO.getPassword(), userDTO.getEmail(), userDTO.getAge(), userDTO.getActive());
+            case CLIENT ->  new Client(userDTO.getLogin(), userDTO.getPassword(), userDTO.getEmail(), userDTO.getAge(), userDTO.getActive());
         };
     }
 
@@ -22,6 +22,9 @@ public class UserDTOMapper {
         UserResponseDTO dto = new UserResponseDTO();
         dto.setId(user.getId());
         dto.setLogin(user.getLogin());
+        dto.setPassword(user.getPassword());
+        dto.setEmail(user.getEmail());
+        dto.setAge(user.getAge());
         dto.setActive(user.isActive());
 
         UserType userType = user.getUserType();

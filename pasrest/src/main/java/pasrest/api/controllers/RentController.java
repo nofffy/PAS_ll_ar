@@ -48,6 +48,12 @@ public class RentController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{id}/finish")
+    public ResponseEntity<Void> finishRent(@PathVariable("id") String id) {
+        rentManager.finishRent(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/client/{id}/current")
     public ResponseEntity<List<RentResponseDTO>> getCurrentRentsByClientId(@PathVariable("id") String id) {
         return ResponseEntity.ok(rentManager.getCurrentRentsByClientId(id));

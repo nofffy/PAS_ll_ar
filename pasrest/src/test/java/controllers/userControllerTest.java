@@ -30,14 +30,17 @@ public class userControllerTest {
         return location.substring(location.lastIndexOf('/') + 1);
     }
 
-    private String createUser(String login, boolean active, UserType type) {
+    private String createUser(String login, String password, String email, int age, boolean active, UserType type) {
         String json = """
                 {
                     "login": "%s",
+                    "password": "%s",
+                    "email": "%s",
+                    "age": %s,
                     "active": %s,
                     "type": "%s"
                 }
-                """.formatted(login, active, type);
+                """.formatted(login, password, email, age, active, type);
         Response response = given().contentType(ContentType.JSON)
                 .body(json)
                 .when()
@@ -53,13 +56,19 @@ public class userControllerTest {
     @Test
     public void CreateUser() {
         String login = "loginnnovember";
+        String password = "password";
+        String email = "email";
+        int age = 50;
         String json = """
                 {
                     "login": "%s",
+                    "password": "%s",
+                    "email": "%s",
+                    "age": %s,
                     "active": true,
                     "type": "CLIENT"
                 }
-                """.formatted(login);
+                """.formatted(login, password, email, age);
         given().contentType(ContentType.JSON)
                 .body(json)
                 .when()
@@ -76,7 +85,10 @@ public class userControllerTest {
     @Test
     public void ReadUser() {
         String login = "read-user";
-        String id = createUser(login, true, UserType.CLIENT);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        String id = createUser(login, password, email, age, true, UserType.CLIENT);
         given().when()
                 .get("/api/users/" + id)
                 .then()
@@ -88,15 +100,21 @@ public class userControllerTest {
     @Test
     public void UpdateUser() {
         String login = "update-user";
-        String id = createUser(login, false, UserType.CLIENT);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        String id = createUser(login, password, email, age, false, UserType.CLIENT);
         String updatedLogin = "unbanned_michael";
         String updatedJson = """
                 {
                     "login": "%s",
+                    "password": "%s",
+                    "email": "%s",
+                    "age": %s,
                     "active": true,
                     "type": "CLIENT"
                 }
-                """.formatted(updatedLogin);
+                """.formatted(updatedLogin, password, email, age);
         given().contentType(ContentType.JSON)
                 .body(updatedJson)
                 .when()
@@ -114,7 +132,10 @@ public class userControllerTest {
     @Test
     public void ActivateUser() {
         String login = "activate-user";
-        String id = createUser(login, false, UserType.CLIENT);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        String id = createUser(login, password, email, age, false, UserType.CLIENT);
         given().when()
                 .get("/api/users/" + id)
                 .then()
@@ -135,7 +156,10 @@ public class userControllerTest {
     @Test
     public void DeactivateUser() {
         String login = "deactivate-user";
-        String id = createUser(login, true, UserType.CLIENT);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        String id = createUser(login, password,  email, age, true, UserType.CLIENT);
         given().when()
                 .get("/api/users/" + id)
                 .then()
@@ -158,7 +182,10 @@ public class userControllerTest {
     @Test
     public void CreateUser_Client_HasMaxRents() {
         String login = "client-with-max";
-        String id = createUser(login, true, UserType.CLIENT);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        String id = createUser(login, password, email, age, true, UserType.CLIENT);
         given().when()
                 .get("/api/users/" + id)
                 .then()
@@ -169,7 +196,10 @@ public class userControllerTest {
     @Test
     public void GetUserByLogin_Found() {
         String login = "by-login-user";
-        createUser(login, true, UserType.CLIENT);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        createUser(login, password, email, age, true, UserType.CLIENT);
         given().when()
                 .get("/api/users/login/" + login)
                 .then()
@@ -183,9 +213,12 @@ public class userControllerTest {
         String login1 = prefix + "-alpha";
         String login2 = prefix + "-sigma";
         String login3 = "other-user";
-        createUser(login1, true, UserType.CLIENT);
-        createUser(login2, true, UserType.CLIENT);
-        createUser(login3, true, UserType.CLIENT);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        createUser(login1, password, email, age, true, UserType.CLIENT);
+        createUser(login2, password, email, age, true, UserType.CLIENT);
+        createUser(login3, password, email, age, true, UserType.CLIENT);
 
         given().when()
                 .get("/api/users?loginPattern=" + prefix)
@@ -199,8 +232,11 @@ public class userControllerTest {
     public void FindAllActive_ReturnsOnlyActive() {
         String activeLogin = "active-user";
         String inactiveLogin = "inactive-user";
-        createUser(activeLogin, true, UserType.CLIENT);
-        createUser(inactiveLogin, false, UserType.CLIENT);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        createUser(activeLogin, password, email, age, true, UserType.CLIENT);
+        createUser(inactiveLogin, password, email, age, false, UserType.CLIENT);
 
         given().when()
                 .get("/api/users?active=true")
@@ -214,8 +250,11 @@ public class userControllerTest {
     public void FindAllInactive_ReturnsOnlyInactive() {
         String activeLogin = "active-user-2";
         String inactiveLogin = "inactive-user-2";
-        createUser(activeLogin, true, UserType.CLIENT);
-        createUser(inactiveLogin, false, UserType.CLIENT);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        createUser(activeLogin, password, email, age, true, UserType.CLIENT);
+        createUser(inactiveLogin, password, email, age, false, UserType.CLIENT);
 
         given().when()
                 .get("/api/users?active=false")
@@ -256,6 +295,9 @@ public class userControllerTest {
         String json = """
                 {
                     "login": "ghost-user",
+                    "password": "password",
+                    "email": "ghost-user",
+                    "age": 20,
                     "active": true,
                     "type": "CLIENT"
                 }
@@ -273,6 +315,9 @@ public class userControllerTest {
         String json = """
                 {
                     "login": "ghost-user",
+                    "password": "password",
+                    "email": "ghost-user",
+                    "age": 20,
                     "active": true,
                     "type": "CLIENT"
                 }
@@ -289,16 +334,22 @@ public class userControllerTest {
     public void UpdateUser_ChangeLoginToExisting_ShouldFail() {
         String login1 = "existing-login-1";
         String login2 = "existing-login-2";
-        createUser(login1, true, UserType.CLIENT);
-        String id2 = createUser(login2, true, UserType.CLIENT);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        createUser(login1, password, email, age, true, UserType.CLIENT);
+        String id2 = createUser(login2, password, email, age, true, UserType.CLIENT);
 
         String updatedJson = """
                 {
                     "login": "%s",
                     "active": true,
+                    "password": "%s",
+                    "email": "%s",
+                    "age": %s,
                     "type": "CLIENT"
                 }
-                """.formatted(login1);
+                """.formatted(login1, password, email, age);
         given().contentType(ContentType.JSON)
                 .body(updatedJson)
                 .when()
@@ -331,6 +382,9 @@ public class userControllerTest {
                 {
                     "login": "",
                     "active": true,
+                    "password": "%s",
+                    "email": "%s",
+                    "age": %s,
                     "type": "CLIENT"
                 }
                 """;
@@ -348,6 +402,9 @@ public class userControllerTest {
                 {
                     "login": "hacker",
                     "active": true,
+                    "password": "%s",
+                    "email": "%s",
+                    "age": %s,
                     "type": "OPSECLVLGOD"
                 }
                 """;
@@ -365,6 +422,9 @@ public class userControllerTest {
                 {
                     "login": null,
                     "active": true,
+                    "password": "%s",
+                    "email": "%s",
+                    "age": %s,
                     "type": "CLIENT"
                 }
                 """;
@@ -382,6 +442,9 @@ public class userControllerTest {
                 {
                     "login": "no-type-user",
                     "active": true,
+                    "password": "%s",
+                    "email": "%s",
+                    "age": %s,
                     "type": null
                 }
                 """;
@@ -396,14 +459,20 @@ public class userControllerTest {
     @Test
     public void uniqueLoginTest() {
         String login = "duplicate-user";
-        createUser(login, true, UserType.CLIENT);
+        String password = "password";
+        String email = "email";
+        int age = 50;
+        createUser(login, password, email, age, true, UserType.CLIENT);
         String duplicateJson = """
                 {
                     "login": "%s",
+                    "password": "%s",
+                    "email": "%s",
+                    "age": %s,
                     "active": true,
                     "type": "CLIENT"
                 }
-                """.formatted(login);
+                """.formatted(login, password, email, age);
         given().contentType(ContentType.JSON)
                 .body(duplicateJson)
                 .when()
