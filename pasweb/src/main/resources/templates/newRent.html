@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New rent</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/holiday.css@0.11.6" />
+</head>
+<body>
+<h1>New rent</h1>
+<p>Client: <strong th:text="${newRent.client.login}"></strong></p>
+
+<form action="#" method="post" th:object="${newRent}" th:action="@{/newRent/confirm}">
+    <table>
+        <tbody>
+        <tr>
+            <td><label for="plant">Plant</label></td>
+            <td>
+                <select id="plant" th:field="*{plant.id}">
+                    <option value="">Choose a plant</option>
+                    <option th:each="p : ${plants}"
+                            th:value="${p.id}"
+                            th:text="${p.name + ' (' + p.type + ', ' + p.cost + ' PLN)'}">
+                    </option>
+                </select>
+            </td>
+            <td><p th:if="${#fields.hasErrors('plant.id')}" th:errors="*{plant.id}"></p></td>
+        </tr>
+        </tbody>
+    </table>
+    <input type="submit" value="Next"/>
+</form>
+<a href="/">Back to main page</a>
+</body>
+</html>

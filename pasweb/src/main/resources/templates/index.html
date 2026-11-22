@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Pasweb ll ar pozdrawiam</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/holiday.css@0.11.6" />
+</head>
+<body>
+<h1>Main page</h1>
+<div sec:authorize="isAuthenticated()">
+    <ul>Welcome, <div style="display: inline" sec:authentication="name"></div>
+        <li> <a th:href="@{/current}">Show my Person</a> </li>
+        <li> <a th:href="@{/logout}">Log out</a> </li>
+        <li> <a th:href="@{/newRent}">Rent a plant</a> </li>
+        <li> <a th:href="@{/listRents}">List rents</a> </li>
+    </ul>
+</div>
+<ul>Welcome to my website! Do whatever you want to do:
+    <li> <a th:href="@{/newClient}">Sign up (create new client)</a> </li>
+    <li> <a th:href="@{/login}">Log in</a> </li>
+    <li> <a th:href="@{/listPlants}">List all plants</a> </li>
+    <li> <a th:href="@{/newPlant}">Create a new plant</a> </li>
+</ul>
+</body>
+</html>

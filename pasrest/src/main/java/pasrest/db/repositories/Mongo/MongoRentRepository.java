@@ -1,15 +1,12 @@
 package pasrest.db.repositories.Mongo;
 
+import com.mongodb.client.model.*;
 import org.springframework.stereotype.Repository;
 import pasrest.Exeptions.ResourceConflictException;
 import pasrest.Exeptions.ResourceNotFoundException;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.IndexOptions;
-import com.mongodb.client.model.Indexes;
-import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
 import pasrest.db.entities.Mongo.plantEnt;
 import pasrest.db.entities.Mongo.rentEnt;
@@ -22,7 +19,9 @@ import org.bson.types.ObjectId;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public class MongoRentRepository implements RentRepository {
@@ -202,5 +201,18 @@ public class MongoRentRepository implements RentRepository {
     public List<Rent> getRents() {
         return collection.find().into(new ArrayList<>()).stream()
                 .map(MongoRentMapper::EntToObj).toList();
+    }
+
+    @Override
+    public Set<String> getCurrentlyRentedPlantIds() {
+        Set<String> rentedIds = new HashSet<>();
+        collection.find(Filters.eq("rentEnd", null))
+                .projection(Projections.include("plant._id"))
+                .forEach(rent -> {
+                    if (rent.getPlant() != null && rent.getPlant().getId() != null) {
+                        rentedIds.add(rent.getPlant().getId().toHexString());
+                    }
+                });
+        return rentedIds;
     }
 }

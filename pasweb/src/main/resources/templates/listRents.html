@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>List rents</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/holiday.css@0.11.6" />
+</head>
+<body>
+<h1>Rents</h1>
+<table style="width: 1400px" th:object="${rents}">
+    <thead>
+    <tr>
+        <th>Rent ID</th>
+        <th>Plant ID</th>
+        <th>Name</th>
+        <th>Start time</th>
+        <th>End time</th>
+        <th>Finish rent</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="rent:${rents}">
+        <td th:text="${rent.id}"/>
+        <td th:text="${rent.plant.id}"/>
+        <td th:text="${rent.plant.name}"/>
+        <td th:text="${#temporals.format(rent.rentStart, 'dd-MM-yyyy HH:mm')}"></td>
+        <td th:text="${rent.rentEnd != null ? #temporals.format(rent.rentEnd, 'dd-MM-yyyy HH:mm') : 'In progress'}"></td>
+        <td>
+            <form method="post" th:action="@{'/listRents/'+${rent.id}+'/finish'}">
+                <input type="submit" value="END" onclick="return confirm('End this rent?')"/>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<a href="/">Back to main page</a>
+</body>
+</html>

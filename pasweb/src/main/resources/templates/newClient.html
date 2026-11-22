@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New client</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/holiday.css@0.11.6" />
+</head>
+<body>
+<h1>New client</h1>
+<form id="newclient" action="#" method="post" th:object="${newClient}" th:action="@{/newClient/confirm}">
+    <table>
+        <thead>
+        <tr>
+            <th>Field</th>
+            <th>Value</th>
+            <td><p th:if="${#fields.hasErrors()}">Errors</p></td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><label for="login">Login</label></td>
+            <td><input id="login" type="text" th:field="*{clientData.login}"></td>
+            <td><p th:if="${#fields.hasErrors('clientData.login')}" th:errors="*{clientData.login}">Name Error</p></td>
+        </tr>
+        <tr>
+            <td><label for="password">Password</label></td>
+            <td><input id="password" type="password" th:field="*{clientData.password}"></td>
+            <td><p th:if="${#fields.hasErrors('clientData.password')}" th:errors="*{clientData.password}">Name Error</p></td>
+        </tr>
+        <tr>
+            <td><label for="passwordRepeat">Password Repeat</label></td>
+            <td><input id="passwordRepeat" type="password" th:field="*{passwordRepeat}"></td>
+            <td><p th:if="${#fields.hasErrors('passwordRepeat')}" th:errors="*{passwordRepeat}">Name Error</p></td>
+        </tr>
+        <tr>
+            <td><label for="email">Email</label></td>
+            <td><input id="email" type="text" th:field="*{clientData.email}"></td>
+            <td><p th:if="${#fields.hasErrors('clientData.email')}" th:errors="*{clientData.email}">Name Error</p></td>
+        </tr>
+        <tr>
+            <td><label for="age">Age</label></td>
+            <td><input id="age" type="number" th:field="*{clientData.age}"></td>
+            <td><p th:if="${#fields.hasErrors('clientData.age')}" th:errors="*{clientData.age}">Name Error</p></td>
+        </tr>
+        </tbody>
+    </table>
+    <input type="submit" value="OK"/>
+</form>
+<a href="/">Back to main page</a>
+</body>
+</html>

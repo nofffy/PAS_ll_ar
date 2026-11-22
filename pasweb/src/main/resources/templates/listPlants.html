@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>List plants</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/holiday.css@0.11.6" />
+</head>
+<body>
+<h1>Plants</h1>
+<table th:object="${plants}">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Color</th>
+        <th>Cost</th>
+        <th>Type</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="plant:${plants}">
+        <td th:text="${plant.id}"/>
+        <td th:text="${plant.name}"/>
+        <td th:text="${plant.color}"/>
+        <td th:text="${plant.cost}"/>
+        <td th:text="${plant.type}"/>
+    </tr>
+    </tbody>
+</table>
+<a href="/">Back to main page</a>
+</body>
+</html>

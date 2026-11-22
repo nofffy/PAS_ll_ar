@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>My person</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/holiday.css@0.11.6" />
+</head>
+<body>
+<h1>My person</h1>
+<table style="border: black">
+    <thead>
+    <tr>
+        <th>Field</th>
+        <th>Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>Login</td>
+        <td th:text="${client.login}"></td>
+    </tr>
+    <tr>
+        <td>Email</td>
+        <td th:text="${client.email}"></td>
+    </tr>
+    <tr>
+        <td>Age</td>
+        <td th:text="${client.age}"></td>
+    </tr>
+    <tr>
+        <td>Active</td>
+        <td><input type="checkbox" disabled="disabled" th:checked="${client.active}"></td>
+    </tr>
+    <tr>
+        <td>ID</td>
+        <td th:text="${client.id}"></td>
+    </tr>
+    <tr>
+        <td>Principal</td>
+        <td sec:authentication="principal"></td>
+    </tr>
+    </tbody>
+</table>
+<a href="/">Back to main page</a>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirm rent</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/holiday.css@0.11.6" />
+</head>
+<body>
+<h1>Confirm rent</h1>
+
+<form method="post" th:action="@{/newRent/save}">
+    <table>
+        <tbody>
+        <tr>
+            <td>Client</td>
+            <td th:text="${newRent.client.login}"></td>
+        </tr>
+        <tr>
+            <td>Plant</td>
+            <td th:text="${newRent.plant.name}"></td>
+        </tr>
+        <tr>
+            <td>Type</td>
+            <td th:text="${newRent.plant.type}"></td>
+        </tr>
+        <tr>
+            <td>Color</td>
+            <td th:text="${newRent.plant.color}"></td>
+        </tr>
+        <tr>
+            <td>Cost</td>
+            <td th:text="${newRent.plant.cost + ' PLN'}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <input type="submit" value="OK"/>
+</form>
+<a href="/">Back to main page</a>
+</body>
+</html>

@@ -52,4 +52,9 @@ public class PlantController {
         plantManager.removePlant(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/available")
+    public ResponseEntity<List<PlantResponseDTO>> getAvailablePlants() {
+        return ResponseEntity.ok(plantManager.getAvailablePlants());
+    }
 }

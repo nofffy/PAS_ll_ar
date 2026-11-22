@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New plant</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/holiday.css@0.11.6" />
+</head>
+<body>
+<h1>New plant</h1>
+<form id="newplant" action="#" method="post" th:object="${newPlant}" th:action="@{/newPlant/confirm}">
+    <table>
+        <thead>
+        <tr>
+            <th>Field</th>
+            <th>Value</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><label for="name">Name</label></td>
+            <td><input id="name" type="text" th:field="*{name}"></td>
+        </tr>
+        <tr>
+            <td><label for="color">Color</label></td>
+            <td><input id="color" type="text" th:field="*{color}"></td>
+        </tr>
+        <tr>
+            <td><label for="cost">Cost</label></td>
+            <td><input id="cost" type="number" step="0.01" th:field="*{cost}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <input type="submit" value="OK"/>
+</form>
+<a href="/">Back to main page</a>
+</body>
+</html>

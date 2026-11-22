@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Log in</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/holiday.css@0.11.6" />
+</head>
+<body>
+<h1>Log in</h1>
+<div th:if="${param.error}">
+    Invalid username and password.
+</div>
+<div th:if="${param.logout}">
+    You have been logged out.
+</div>
+<form id="loginpage" action="#" th:action="@{/login}" method="post">
+    <table>
+        <thead>
+        <tr>
+            <th><label for="username">Login</label></th>
+            <th><label for="password">Password</label></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <input id="username" name="username" type="text">
+            </td>
+            <td>
+                <input id="password" name="password" type="password">
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <input type="submit" value="OK"/>
+</form>
+<a href="/">Back to main page</a>
+</body>
+</html>

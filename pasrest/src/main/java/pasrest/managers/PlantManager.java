@@ -8,15 +8,20 @@ import pasrest.api.DTOs.CreateUpdatePlantDTO;
 import pasrest.api.DTOs.PlantResponseDTO;
 import pasrest.model.Plant;
 import pasrest.model.repositories.PlantRepository;
+import pasrest.model.repositories.RentRepository;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class PlantManager {
     private final PlantRepository plantRepository;
+    private final RentRepository rentRepository;
 
-    public PlantManager(PlantRepository plantRepository) {
+    public PlantManager(PlantRepository plantRepository, RentRepository rentRepository) {
         this.plantRepository = plantRepository;
+        this.rentRepository = rentRepository;
     }
 
     public PlantResponseDTO createPlant(CreateUpdatePlantDTO plant) {
@@ -64,5 +69,12 @@ public class PlantManager {
         return plantRepository.getPlants().stream()
             .map(PlantDTOMapper::ModelToDTO)
             .toList();
+    }
+
+    public List<PlantResponseDTO> getAvailablePlants() {
+        Set<String> rentedPlantIds = rentRepository.getCurrentlyRentedPlantIds();
+        return getPlants().stream()
+                .filter(plant -> !rentedPlantIds.contains(plant.getId()))
+                .toList();
     }
 }

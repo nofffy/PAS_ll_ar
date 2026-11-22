@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New client - confirm</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/holiday.css@0.11.6" />
+</head>
+<body>
+<h1>New client - confirm</h1>
+
+<form id="confirmclient" action="#" method="post" th:action="@{/newClient/save}">
+    <table>
+        <thead>
+        <tr>
+            <th>Field</th>
+            <th>Value</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Login</td>
+            <td th:text="${newClient.clientData.login}"></td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td th:text="${newClient.clientData.email}"></td>
+        </tr>
+        <tr>
+            <td>Age</td>
+            <td th:text="${newClient.clientData.age}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <input type="submit" value="OK"/>
+</form>
+<a href="/">Back to main page</a>
+</body>
+</html>

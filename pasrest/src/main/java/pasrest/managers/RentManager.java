@@ -5,6 +5,7 @@ import pasrest.Exeptions.ResourceConflictException;
 import pasrest.Exeptions.ResourceNotFoundException;
 import pasrest.api.DTOmappers.RentDTOMapper;
 import pasrest.api.DTOs.CreateUpdateRentDTO;
+import pasrest.api.DTOs.PlantResponseDTO;
 import pasrest.api.DTOs.RentResponseDTO;
 import pasrest.model.Plant;
 import pasrest.model.Rent;
@@ -16,6 +17,7 @@ import pasrest.model.repositories.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class RentManager {

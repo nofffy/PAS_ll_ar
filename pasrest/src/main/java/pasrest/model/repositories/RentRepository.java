@@ -3,6 +3,7 @@ package pasrest.model.repositories;
 import pasrest.model.Rent;
 
 import java.util.List;
+import java.util.Set;
 
 public interface RentRepository {
     Rent getRent(String id);
@@ -15,4 +16,5 @@ public interface RentRepository {
     List<Rent> getPastRentsByClientId(String id);
     List<Rent> getCurrentRentsByClientId(String id);
     List<Rent> getRents();
+    Set<String> getCurrentlyRentedPlantIds();
 }
