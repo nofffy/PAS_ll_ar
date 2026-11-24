@@ -13,12 +13,13 @@
         <li> <a th:href="@{/logout}">Log out</a> </li>
         <li> <a th:href="@{/newRent}">Rent a plant</a> </li>
         <li> <a th:href="@{/listRents}">List rents</a> </li>
+        <li sec:authorize="hasRole('ADMIN')"> <a th:href="@{/listAllRents}">List all rents</a> </li>
     </ul>
 </div>
 <ul>Welcome to my website! Do whatever you want to do:
     <li> <a th:href="@{/newClient}">Sign up (create new client)</a> </li>
     <li> <a th:href="@{/login}">Log in</a> </li>
-    <li> <a th:href="@{/listPlants}">List all plants</a> </li>
+    <li> <a th:href="@{/listAllPlants}">List all plants</a> </li>
     <li> <a th:href="@{/newPlant}">Create a new plant</a> </li>
 </ul>
 </body>

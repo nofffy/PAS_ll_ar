@@ -30,6 +30,13 @@ public class RentApi {
         }
     }
 
+    public List<RentDTO> getAllRents() {
+        return restClient.get()
+                .uri("/rents")
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
+    }
+
     public void createRent(RentDTO rentDTO) {
         Map<String, Object> body = Map.of(
                 "clientId", rentDTO.getClient().getId(),
@@ -48,6 +55,17 @@ public class RentApi {
         try {
             restClient.post()
                     .uri("/rents/{id}/finish", rentId)
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (HttpClientErrorException.NotFound e) {
+            throw new AppException("Nie znaleziono wypozyczenia o ID: " + rentId);
+        }
+    }
+
+    public void deleteRent(String rentId) {
+        try {
+            restClient.delete()
+                    .uri("/rents/{id}", rentId)
                     .retrieve()
                     .toBodilessEntity();
         } catch (HttpClientErrorException.NotFound e) {

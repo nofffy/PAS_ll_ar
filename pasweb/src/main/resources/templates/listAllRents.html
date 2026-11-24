@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>List all rents</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/holiday.css@0.11.6" />
+</head>
+<body>
+<h1>Rents</h1>
+<table style="width: 92vw; max-width: 1500px; transform: translateX(-50%); margin-left: 50%;" th:object="${rents}">
+    <thead>
+    <tr>
+        <th>Rent ID</th>
+        <th>Plant ID</th>
+        <th>Plant name</th>
+        <th>Client ID</th>
+        <th>Client login</th>
+        <th>Start time</th>
+        <th>End time</th>
+        <th>Finish rent</th>
+        <th>Remove rent</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="rent:${rents}">
+        <td th:text="${rent.id}"/>
+        <td th:text="${rent.plant.id}"/>
+        <td th:text="${rent.plant.name}"/>
+        <td th:text="${rent.client.id}"/>
+        <td th:text="${rent.client.login}"/>
+        <td th:text="${#temporals.format(rent.rentStart, 'dd-MM-yyyy HH:mm')}"></td>
+        <td th:text="${rent.rentEnd != null ? #temporals.format(rent.rentEnd, 'dd-MM-yyyy HH:mm') : 'In progress'}"></td>
+        <td>
+            <form th:if="${rent.rentEnd == null}" method="post" th:action="@{'/listAllRents/'+${rent.id}+'/finish'}">
+                <input type="submit" value="END" onclick="return confirm('End this rent?')"/>
+            </form>
+        </td>
+        <td>
+            <form th:if="${rent.rentEnd == null}" method="post" th:action="@{'/listAllRents/'+${rent.id}+'/delete'}">
+                <input type="submit" value="DEL" onclick="return confirm('Delete this rent?')"/>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<a href="/">Back to main page</a>
+</body>
+</html>

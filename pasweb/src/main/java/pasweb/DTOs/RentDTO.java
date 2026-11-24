@@ -1,9 +1,12 @@
 package pasweb.DTOs;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDateTime;
 
 public class RentDTO {
     private String id;
+    @JsonProperty("user")
     private ClientDTO client;
     private PlantDTO plant;
     private LocalDateTime rentStart;

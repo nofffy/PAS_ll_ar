@@ -2,6 +2,7 @@ package pasweb.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -39,7 +40,8 @@ public class SecurityConfig {
         http
                 .csrf(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/login", "/newClient", "/newClient/**", "listPlants", "/newPlant", "/newPlant/**", "/success.html", "/error").permitAll()
+                        .requestMatchers("/", "/login", "/newClient", "/newClient/**", "/listAllPlants", "/newPlant", "/newPlant/**", "/success.html", "/error").permitAll()
+                        .requestMatchers("/listAllRents", "/listAllRents/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
