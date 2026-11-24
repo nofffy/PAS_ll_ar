@@ -7,17 +7,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import pasweb.rest.PlantApi;
 
 @Controller
-@RequestMapping("/listPlants")
-public class ListPlants {
+@RequestMapping("/listAllPlants")
+public class ListAllPlants {
     private final PlantApi plantApi;
 
-    public ListPlants(PlantApi plantApi) {
+    public ListAllPlants(PlantApi plantApi) {
         this.plantApi = plantApi;
     }
 
     @GetMapping
     public String listPlants(Model model) {
         model.addAttribute("plants", plantApi.getAllPlants());
-        return "listPlants";
+        return "listAllPlants";
     }
 }
