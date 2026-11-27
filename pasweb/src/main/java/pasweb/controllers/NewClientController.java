@@ -40,13 +40,21 @@ public class NewClientController {
         if(bindingResult.hasErrors()) {
             return "/newClient";
         }
-        return "/newClientConfirm";
+        return "redirect:/newClient/confirm";
+    }
+
+    @GetMapping("/confirm")
+    public String showConfirmNewClient(@ModelAttribute("newClient") NewClientDTO newClient) {
+        if (newClient.getClientData() == null || newClient.getClientData().getLogin() == null) {
+            return "redirect:/newClient";
+        }
+        return "newClientConfirm";
     }
 
     @PostMapping("/save")
     public String saveNewClient(@ModelAttribute("newClient") NewClientDTO newClient, BindingResult bindingResult, SessionStatus sessionStatus) {
         ClientDTO source = newClient.getClientData();
-        ClientDTO payload = new ClientDTO(
+        ClientDTO body = new ClientDTO(
                 source.getLogin(),
                 passwordEncoder.encode(source.getPassword()),
                 source.getEmail(),
@@ -54,7 +62,7 @@ public class NewClientController {
                 true
         );
         try {
-            clientApi.registerClient(payload);
+            clientApi.registerClient(body);
             sessionStatus.setComplete();
             return "redirect:/success.html";
         } catch (HttpClientErrorException.Conflict e) {

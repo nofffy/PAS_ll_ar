@@ -16,7 +16,6 @@ public class PlantDTO {
     @Positive(message = "Cost must be greater than 0")
     private Double cost;
 
-    @NotNull(message = "Plant type is required")
     private String type;
 
     public PlantDTO() {}

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import pasweb.DTOs.ClientDTO;
+import pasweb.DTOs.NewClientDTO;
 import pasweb.DTOs.PlantDTO;
 import pasweb.DTOs.RentDTO;
 import pasweb.rest.ClientApi;
@@ -45,12 +46,17 @@ public class NewRentController {
             bindingResult.rejectValue("plant.id", "error.plant", "Choose a plant from the list");
         }
         if (bindingResult.hasErrors()) {
-            model.addAttribute("plants", plantApi.getAllPlants());
+            model.addAttribute("plants", plantApi.getAvailablePlants());
             return "newRent";
         }
         PlantDTO selectedPlant = plantApi.getPlant(newRent.getPlant().getId());
         newRent.setPlant(selectedPlant);
 
+        return "redirect:/newRent/confirm";
+    }
+
+    @GetMapping("/confirm")
+    public String showConfirmNewRent(@ModelAttribute("newRent") RentDTO newRent) {
         return "newRentConfirm";
     }
 
@@ -61,8 +67,9 @@ public class NewRentController {
             sessionStatus.setComplete();
             return "redirect:/success.html";
         } catch (HttpClientErrorException.Conflict e) {
-            bindingResult.rejectValue("plant.id", "error.plant", "This plant is already rented");
-            model.addAttribute("plants", plantApi.getAllPlants());
+            String errorMessage = e.getResponseBodyAsString();
+            bindingResult.rejectValue("plant.id", "error.plant", errorMessage);
+            model.addAttribute("plants", plantApi.getAvailablePlants());
             return "newRent";
         }
     }

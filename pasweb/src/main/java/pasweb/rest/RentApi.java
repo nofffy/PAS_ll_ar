@@ -58,7 +58,9 @@ public class RentApi {
                     .retrieve()
                     .toBodilessEntity();
         } catch (HttpClientErrorException.NotFound e) {
-            throw new AppException("Nie znaleziono wypozyczenia o ID: " + rentId);
+            throw new AppException("Nie znaleziono wypożyczenia o ID: " + rentId);
+        } catch (HttpClientErrorException.Conflict e) {
+            throw new AppException("Wypożyczenie o ID " + rentId + " zostało już zakończone");
         }
     }
 
